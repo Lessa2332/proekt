@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
 <meta name="theme-color" content="#7c3aed">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Записник Дослідника · Лабораторія</title>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<!-- Бібліотека для графіків -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Бібліотека для генерації PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
   --lime:#84cc16;--lime-dark:#4d7c0f;--lime-light:#f7fee7;
@@ -129,14 +131,14 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
 .btn-save{background:var(--lime);color:#fff;width:100%}
 .btn-present{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;width:100%;margin-bottom:10px}
 
-/* REPORT & PRESENTATION */
+/* REPORT */
 .report{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md)}
 .report h2{text-align:center;color:var(--orange-dark)}
 .report .row{margin-bottom:8px;padding:8px 11px;background:#f8fafc;border-left:3px solid var(--orange);border-radius:6px}
 .report .row h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
 .report .row p,.report ul li{font-size:.86rem;font-weight:700;white-space:pre-wrap}
 
-/* Presentation Mode */
+/* PRESENTATION */
 .presentation-overlay{position:fixed;inset:0;background:#0f172a;color:#fff;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center}
 .presentation-overlay.active{display:flex}
 .slide{display:none;width:100%;max-width:800px;animation:fade .3s ease}
@@ -154,12 +156,18 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
 .star{color:#cbd5e1;transition:color .2s}
 .star.active{color:#facc15}
 
-@media print{
+/* СТИЛІ ДЛЯ ДРУКУ ТА PDF */
+@media print {
   .app, .screen, header, .steps, footer, .banner, .btn, .reset, .photo-zone, .add-row, .item-row .del, .link-item .qr-btn, .chart-container, .presentation-overlay, .stars { display:none !important; }
   #p8 { display:block !important; }
   .report { border:none; box-shadow:none; padding:0; }
   body { background:#fff; }
 }
+.pdf-mode .app { max-width: 100%; padding: 0; background: #fff; }
+.pdf-mode header, .pdf-mode .steps, .pdf-mode footer, .pdf-mode .btn, .pdf-mode .banner, .pdf-mode .photo-zone, .pdf-mode .add-row, .pdf-mode .chart-container { display: none !important; }
+.pdf-mode .screen { display: block !important; }
+.pdf-mode .page { display: block !important; }
+.pdf-mode .report { box-shadow: none; border: none; padding: 0; }
 </style>
 </head>
 <body>
@@ -261,7 +269,7 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
         <button class="add-row" onclick="addPlan()">+ Крок</button>
       </section>
 
-      <!-- КРОК 7: ПРАКТИКА (РОЗШИРЕНА) -->
+      <!-- КРОК 7: ПРАКТИКА -->
       <section class="page" id="p7">
         <div class="banner" style="background:linear-gradient(135deg,rgba(255,140,56,.14),rgba(255,140,56,.22));border-color:rgba(255,107,0,.42)">
           <h2 style="color:var(--orange-dark)">Крок 7: Практика та Візуалізація</h2>
@@ -294,11 +302,11 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
           </div>
         </div>
 
-        <!-- ВІЗУАЛІЗАЦІЯ (ДІАГРАМИ) -->
+        <!-- ВІЗУАЛІЗАЦІЯ -->
         <div class="field">
           <label>📊 Побудуй діаграму для презентації</label>
           <div class="chart-container">
-            <p style="font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:10px;">Порівняй два показники (наприклад, довжина річок, кількість видів)</p>
+            <p style="font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:10px;">Порівняй два показники</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
               <input type="text" id="chartLabel1" placeholder="Показник 1" oninput="updateChart()">
               <input type="number" id="chartVal1" placeholder="Значення" oninput="updateChart()">
@@ -309,7 +317,7 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
           </div>
         </div>
 
-        <!-- ПОСИЛАННЯ ТА QR -->
+        <!-- ПОСИЛАННЯ -->
         <div class="field">
           <label>🔗 Посилання та QR-коди</label>
           <div id="linksList"></div>
@@ -324,12 +332,12 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
         </div>
       </section>
 
-      <!-- КРОК 8: ЗАХИСТ ТА РЕФЛЕКСІЯ -->
+      <!-- КРОК 8 -->
       <section class="page" id="p8">
         <div class="banner"><h2>Крок 8: Захист та Рефлексія</h2><p>Підготуйся до виступу!</p></div>
         
         <div class="field">
-          <label>🎤 Твоя промова (сценарій захисту):</label>
+          <label>🎤 Твоя промова:</label>
           <textarea id="speech" placeholder="Автоматично згенерується..." readonly style="background:#f1f5f9;color:#334155;font-weight:700;min-height:150px;"></textarea>
           <button class="btn" style="background:var(--violet);color:#fff;width:100%;margin-top:8px;" onclick="generateSpeech()">Згенерувати промову</button>
         </div>
@@ -356,7 +364,8 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
         </div>
 
         <button class="btn btn-present" onclick="startPresentation()">▶ Режим презентації</button>
-        <button class="btn btn-save" style="margin-top:10px;" onclick="window.print()">Зберегти у PDF</button>
+        <!-- КНОПКА PDF -->
+        <button class="btn btn-save" style="margin-top:10px;" onclick="downloadPDF()">📥 Завантажити гарний PDF</button>
         
         <div class="report" id="report" style="margin-top:20px;">
           <h2>Звіт Дослідника</h2>
@@ -383,7 +392,7 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
   </section>
 </div>
 
-<!-- PRESENTATION OVERLAY -->
+<!-- PRESENTATION -->
 <div class="presentation-overlay" id="presentation">
   <button class="close-btn" onclick="closePresentation()">×</button>
   <div class="slide active" id="slide-1">
@@ -424,7 +433,7 @@ const TOPIC_DATA = {
   t5: { title: "Спадщина ЮНЕСКО в Африці", problem: "Природні об'єкти ЮНЕСКО потребують охорони.", goal: "Систематизувати об'єкти ЮНЕСКО.", hypo: "Найбільша загроза — браконьєрство.", obj: "Світова спадщина", subj: "Природні об'єкти Африки" },
   t6: { title: "Порушення рівноваги", problem: "Опустелювання загрожує екології.", goal: "Проаналізувати причини та шляхи відновлення.", hypo: "Найефективніше — створення парків.", obj: "Екологічний стан", subj: "Порушення рівноваги" },
   t7: { title: "Давид Лівінгстон", problem: "Внесок Лівінгстона у географію.", goal: "Дослідити експедиції Лівінгстона.", hypo: "Головне досягнення — боротьба з работоргівлею.", obj: "Історія дослідження", subj: "Експедиції Лівінгстона" },
-  t8: { title: "Вулкан Кіліманджаро", problem: "Глобальне потепління загрожує льодовикам.", goal: "Дослідити стан зледеніння.", hypo: "Льодовики можуть зникнути до кінця століття.", obj: "Вулканічні форми", subj: "Кіліманджaro" }
+  t8: { title: "Вулкан Кіліманджаро", problem: "Глобальне потепління загрожує льодовикам.", goal: "Дослідити стан зледеніння.", hypo: "Льодовики можуть зникнути до кінця століття.", obj: "Вулканічні форми", subj: "Кіліманджаро" }
 };
 
 // --- СТАН ---
@@ -530,21 +539,8 @@ function updateChart() {
   const ctx = document.getElementById('myChart').getContext('2d');
   chartInstance = new Chart(ctx, {
     type: 'bar',
-    data: {
-      labels: [l1, l2],
-      datasets: [{
-        label: 'Порівняння',
-        data: [v1, v2],
-        backgroundColor: ['#7c3aed', '#ff8c38'],
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
-    }
+    data: { labels: [l1, l2], datasets: [{ label: 'Порівняння', data: [v1, v2], backgroundColor: ['#7c3aed', '#ff8c38'], borderRadius: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
   });
   save();
 }
@@ -628,6 +624,40 @@ function buildReport() {
   const pRow = document.getElementById('r-photo-row'); const pGrid = document.getElementById('r-photos'); pGrid.innerHTML='';
   if(photos.length){ pRow.style.display=''; photos.forEach(src=>{ const i=document.createElement('div'); i.className='r-photo-item'; i.innerHTML=`<img src="${src}">`; pGrid.appendChild(i); }); }
   else pRow.style.display='none';
+}
+
+// ==========================================
+// ГОЛОВНА ФУНКЦІЯ ДЛЯ СТВОРЕННЯ PDF
+// ==========================================
+function downloadPDF() {
+  const element = document.getElementById('report');
+  
+  // Тимчасово ховаємо кнопки та зайві елементи всередині звіту (якщо є)
+  // і робимо фон білим
+  const opt = {
+    margin:       [10, 10, 10, 10],
+    filename:     `Zvit_${document.getElementById('name').value || 'Doslidnyk'}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  // Показуємо користувачу, що йде генерація
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ Генерую PDF...';
+  btn.disabled = true;
+
+  // Викликаємо бібліотеку
+  html2pdf().set(opt).from(element).save().then(() => {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }).catch(err => {
+    console.error(err);
+    alert('Помилка створення PDF. Спробуйте ще раз.');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  });
 }
 
 // --- ПРЕЗЕНТАЦІЯ ---
