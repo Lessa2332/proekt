@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+<meta name="theme-color" content="#7c3aed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Записник Дослідника">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="description" content="Безпечний офлайн-записник для навчальних проєктів. Без реклами, без збору даних. Авторка: Олеся Бохонок.">
+<meta name="author" content="Олеся Бохонок">
+<title>Записник Дослідника · Навчальний проєкт</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lime:#84cc16;--lime-dark:#4d7c0f;--lime-light:#f7fee7;
+  --orange:#ff6b00;--orange-dark:#c2410c;
+  --violet:#7c3aed;--violet-dark:#5b21b6;--violet-light:#f5f3ff;
+  --blue:#0284c7;--blue-light:#e0f2fe;
+  --red:#dc2626;--red-light:#fee2e2;
+  --ink:#0f172a;--muted:#64748b;
+  --surface:rgba(255,255,255,.72);
+  --surface-solid:#ffffff;
+  --glass:rgba(255,255,255,.55);
+  --border:rgba(148,163,184,.28);
+  --shadow-sm:0 2px 8px rgba(15,23,42,.06);
+  --shadow-md:0 8px 24px -4px rgba(15,23,42,.10);
+  --shadow-lg:0 24px 48px -12px rgba(76,29,149,.28);
+  --radius:20px;--radius-lg:26px;
+  --fs-base:16px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --anim:.28s;
+}
+body.a11y{--fs-base:19px}
+body.a11y .step-lbl{font-size:.72rem}
+body.a11y .sub-hint{font-size:.92rem}
+body.a11y .hint{font-size:.95rem}
+body.a11y input,body.a11y textarea,body.a11y select{font-size:18px;padding:15px 18px}
+body.a11y .btn{padding:16px 24px;font-size:1.05rem}
+body.contrast{--surface:#fff;--surface-solid:#fff;--glass:#fff;--border:#0f172a;--muted:#1e293b;--ink:#000}
+body.contrast .app{border:3px solid #000;box-shadow:none}
+body.contrast .chk,body.contrast .plan-item,body.contrast .verdict,body.contrast .a11y-item{background:#fff;border-color:#000;color:#000}
+body.reduced *{animation:none!important;transition:none!important}
+body.dyslexic{font-family:'Comic Sans MS','Trebuchet MS',Verdana,sans-serif!important;letter-spacing:.03em;word-spacing:.14em;line-height:1.75}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:var(--fs-base);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(163,230,53,.28), transparent 60%),
+    radial-gradient(1000px 700px at 110% 10%, rgba(255,140,56,.26), transparent 55%),
+    radial-gradient(900px 800px at 50% 120%, rgba(124,58,237,.20), transparent 60%),
+    linear-gradient(135deg,#f7fee7 0%,#fff7ed 50%,#f5f3ff 100%);
+  background-attachment:fixed;
+  color:var(--ink);min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:calc(10px + var(--safe-top)) calc(10px + var(--safe-right)) calc(10px + var(--safe-bottom)) calc(10px + var(--safe-left));
+  line-height:1.55;overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased;
+}
+*:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
+
+.app{
+  width:100%;max-width:720px;
+  background:var(--surface);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;display:flex;flex-direction:column;
+  min-height:min(880px,calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom)));
+  max-height:calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom));
+  position:relative;
+}
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
+.screen.active{display:flex}
+
+/* INTRO */
+.intro-screen{
+  padding:calc(28px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background: linear-gradient(160deg,#7c3aed 0%,#a855f7 35%,#f97316 75%,#84cc16 130%);
+  color:#fff;align-items:center;justify-content:center;text-align:center;
+}
+.intro-inner{width:100%;max-width:480px;margin:auto}
+.intro-title{font-family:'Comfortaa',cursive;font-size:1.5rem;margin-bottom:10px;}
+.intro-sub{font-size:.95rem;font-weight:800;margin-bottom:22px;}
+.intro-start{width:100%;padding:17px;border:none;border-radius:16px;font-weight:900;font-size:1.1rem;color:#fff;background:linear-gradient(135deg,#84cc16,#4d7c0f);cursor:pointer;}
+
+/* WELCOME & CONSENT */
+.welcome-screen,.consent-screen{
+  padding:calc(24px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
+  overflow-y:auto;background:linear-gradient(160deg,#a3e635 0%,#facc15 45%,#ff8c38 80%,#7c3aed 140%);
+  color:#fff;align-items:center;justify-content:center;
+}
+.welcome-inner,.consent-inner{width:100%;max-width:480px;margin:auto}
+.welcome-card,.consent-card{background:#fff;border-radius:22px;padding:22px;color:var(--ink);text-align:left;}
+.field{margin-bottom:18px}
+.field label{display:block;font-weight:800;color:#334155;margin-bottom:6px;font-size:.92rem}
+input[type=text],input[type=date],textarea,select{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:14px;font-family:inherit;font-size:16px;background:#fff;outline:none;box-shadow:var(--shadow-sm)}
+textarea{resize:vertical;min-height:82px;}
+.hint{font-size:.8rem;color:#475569;background:rgba(241,245,249,.75);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:8px;}
+
+/* HEADER & NAV */
+header{background:linear-gradient(115deg,#a3e635 0%,#facc15 35%,#ff8c38 75%,#7c3aed 130%);padding:calc(14px + var(--safe-top)) 14px 14px;color:#fff;flex-shrink:0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;}
+header h1{font-family:'Comfortaa',cursive;font-size:1.1rem;}
+.steps{display:flex;background:var(--glass);border-bottom:1px solid var(--border);padding:10px 4px;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(16px);}
+.step{flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px;}
+.step-num{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--muted);border:2px solid var(--border);font-weight:900;display:flex;align-items:center;justify-content:center;}
+.step.active .step-num{background:var(--orange);color:#fff;}
+.step-lbl{font-size:.58rem;font-weight:800;color:var(--muted);text-transform:uppercase;text-align:center;}
+.step.active .step-lbl{color:var(--orange-dark);}
+
+main{padding:20px 16px;flex:1;overflow-y:auto;}
+.page{display:none;animation:fade var(--anim) ease}
+.page.active{display:block}
+.banner{background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(124,58,237,.20));border:1.5px solid rgba(124,58,237,.42);border-radius:var(--radius);padding:14px;margin-bottom:18px;}
+.banner h2{font-family:'Comfortaa',cursive;color:var(--violet-dark);font-size:1.02rem;}
+
+.item-row{display:grid;grid-template-columns:1fr 76px 34px;gap:7px;margin-bottom:9px;align-items:center;}
+.item-row input{padding:11px;}
+.item-row .del{width:34px;height:34px;border-radius:50%;background:#fee2e2;color:#dc2626;border:none;font-weight:900;cursor:pointer;}
+.add-row{display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(132,204,22,.14);border:2px dashed var(--lime);color:var(--lime-dark);padding:12px;border-radius:14px;font-weight:900;cursor:pointer;width:100%;}
+
+footer{display:flex;justify-content:space-between;padding:12px 14px;background:var(--glass);border-top:1px solid var(--border);}
+.btn{padding:13px 20px;border-radius:14px;font-weight:900;border:none;cursor:pointer;display:inline-flex;align-items:center;}
+.btn-back{background:#fff;color:#475569;}
+.btn-next{background:var(--orange);color:#fff;}
+.btn-save{background:var(--lime);color:#fff;width:100%;justify-content:center;}
+
+.report{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md);}
+.report h2{text-align:center;color:var(--orange-dark);}
+.report .row{margin-bottom:8px;padding:8px 11px;background:#f8fafc;border-left:3px solid var(--orange);border-radius:6px;}
+.report .row h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;}
+.report .row p,.report ul li{font-size:.86rem;font-weight:700;white-space:pre-wrap;}
+
+/* PRINT */
+@media print{
+  .app, .screen, header, .steps, footer, .banner, .btn, .reset { display:none !important; }
+  #p8 { display:block !important; }
+  .report { border:none; box-shadow:none; padding:0; }
+  body { background:#fff; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ЕКРАН 0: ВІТАННЯ -->
+  <section class="screen intro-screen active" id="screen-intro">
+    <div class="intro-inner">
+      <h1 class="intro-title">Записник Дослідника</h1>
+      <p class="intro-sub">Твій помічник для створення справжнього навчального проєкту!</p>
+      <button class="intro-start" onclick="showScreen('welcome')">Почати!</button>
+    </div>
+  </section>
+
+  <!-- ЕКРАН 1: ЗНАЙОМСТВО -->
+  <section class="screen welcome-screen" id="screen-welcome">
+    <div class="welcome-inner">
+      <div class="welcome-card">
+        <h2 style="margin-bottom:16px;text-align:center;">Давай познайомимося!</h2>
+        <div class="field">
+          <label>Ім'я дослідника</label>
+          <input type="text" id="name" placeholder="Наприклад: Оленка">
+        </div>
+        <div class="field">
+          <label>Клас</label>
+          <input type="text" id="klass" placeholder="Наприклад: 5-А">
+        </div>
+        <div class="field">
+          <label>Дата проєкту</label>
+          <input type="date" id="date">
+        </div>
+        <button class="btn btn-next" style="width:100%;justify-content:center;" onclick="startNotebook()">Почати проєкт</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЕКРАН 2: ОСНОВНИЙ -->
+  <section class="screen" id="screen-main">
+    <header>
+      <div class="header-top">
+        <h1>Записник Дослідника</h1>
+        <div style="font-size:.7rem;font-weight:800;">Авторка: Олеся Бохонок</div>
+      </div>
+    </header>
+
+    <!-- НАВІГАЦІЯ -->
+    <nav class="steps" aria-label="Кроки">
+      <button class="step active" onclick="go(1)"><span class="step-num">1</span><span class="step-lbl">Тема</span></button>
+      <button class="step" onclick="go(2)"><span class="step-num">2</span><span class="step-lbl">Проблема</span></button>
+      <button class="step" onclick="go(3)"><span class="step-num">3</span><span class="step-lbl">Мета</span></button>
+      <button class="step" onclick="go(4)"><span class="step-num">4</span><span class="step-lbl">Гіпотеза</span></button>
+      <button class="step" onclick="go(5)"><span class="step-num">5</span><span class="step-lbl">Об'єкт</span></button>
+      <button class="step" onclick="go(6)"><span class="step-num">6</span><span class="step-lbl">План</span></button>
+      <button class="step" onclick="go(7)"><span class="step-num">7</span><span class="step-lbl">Продукт</span></button>
+      <button class="step" onclick="go(8)"><span class="step-num">8</span><span class="step-lbl">Звіт</span></button>
+    </nav>
+
+    <main id="mainContent">
+      
+      <!-- КРОК 1: ТЕМА -->
+      <section class="page active" id="p1">
+        <div class="banner">
+          <h2>Крок 1: Титульна сторінка / Тема</h2>
+          <p>Обери тему зі списку або впиши свою.</p>
+        </div>
+        <div class="field">
+          <label>Обери готову тему проєкту:</label>
+          <select id="topicSelect" onchange="selectTopic(this.value)">
+            <option value="">-- Обрати з переліку --</option>
+            <option value="Африка: материк контрастів та унікальної природи">Африка: материк контрастів</option>
+            <option value="Великі водні артерії Африки: річки Ніл та Конго">Великі річки Африки (Ніл, Конго)</option>
+            <option value="Унікальні водойми Африки: озера Вікторія, Танганьїка, Чад">Унікальні озера Африки</option>
+            <option value="Водоспад Вікторія (Мосі-оа-Тунья) — перлина Африки">Водоспад Вікторія</option>
+            <option value="Найвідоміші природні об'єкти Африки зі Світової спадщини ЮНЕСКО">Світова спадщина ЮНЕСКО в Африці</option>
+            <option value="Порушення природної рівноваги в Африці та шляхи її відновлення">Порушення рівноваги в Африці</option>
+            <option value="Давид Лівінгстон — видатний дослідник Африки">Давид Лівінгстон: дослідник Африки</option>
+            <option value="Вулкан Кіліманджаро — найвища точка Африки">Вулкан Кіліманджаро</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Або впиши свою назву проєкту:</label>
+          <input type="text" id="topic" placeholder="Назва мого проєкту..." oninput="save()">
+        </div>
+      </section>
+
+      <!-- КРОК 2: ПРОБЛЕМА -->
+      <section class="page" id="p2">
+        <div class="banner">
+          <h2>Крок 2: Проблема (актуальність)</h2>
+          <p>Чому це важливо дослідити?</p>
+        </div>
+        <div class="field">
+          <label>Опиши проблему:</label>
+          <textarea id="problem" placeholder="Ця тема є важливою, тому що..." oninput="save()"></textarea>
+        </div>
+      </section>
+
+      <!-- КРОК 3: МЕТА ТА ЗАВДАННЯ -->
+      <section class="page" id="p3">
+        <div class="banner">
+          <h2>Крок 3: Мета та завдання (SMART)</h2>
+          <p>Чого я хочу досягти і як саме?</p>
+        </div>
+        <div class="field">
+          <label>Мета проєкту:</label>
+          <textarea id="goal" placeholder="Мета: дослідити..." oninput="save()"></textarea>
+        </div>
+        <div class="field">
+          <label>Завдання (кроки до мети):</label>
+          <div id="tasksList"></div>
+          <button class="add-row" onclick="addTask()">+ Додати завдання</button>
+        </div>
+      </section>
+
+      <!-- КРОК 4: ГІПОТЕЗА -->
+      <section class="page" id="p4">
+        <div class="banner">
+          <h2>Крок 4: Гіпотеза</h2>
+          <p>Припущення, яке треба довести або спростувати.</p>
+        </div>
+        <div class="field">
+          <label>Моя гіпотеза:</label>
+          <textarea id="hypo" placeholder="Я припускаю, що..." oninput="save()"></textarea>
+        </div>
+      </section>
+
+      <!-- КРОК 5: ОБ'ЄКТ ТА ПРЕДМЕТ -->
+      <section class="page" id="p5">
+        <div class="banner">
+          <h2>Крок 5: Об'єкт і предмет дослідження</h2>
+          <p>Що саме я вивчаю?</p>
+        </div>
+        <div class="field">
+          <label>Об'єкт дослідження (загальне):</label>
+          <input type="text" id="obj" placeholder="Наприклад: природа Африки..." oninput="save()">
+        </div>
+        <div class="field">
+          <label>Предмет дослідження (конкретне):</label>
+          <input type="text" id="subj" placeholder="Наприклад: водойми Африки..." oninput="save()">
+        </div>
+      </section>
+
+      <!-- КРОК 6: ПЛАН -->
+      <section class="page" id="p6">
+        <div class="banner">
+          <h2>Крок 6: План реалізації та методи</h2>
+          <p>Як я буду це робити?</p>
+        </div>
+        <div class="field">
+          <label>Методи (спостереження, аналіз, пошук):</label>
+          <textarea id="methods" placeholder="Які методи використаю..." oninput="save()"></textarea>
+        </div>
+        <div class="field">
+          <label>Покроковий план:</label>
+          <div id="planList"></div>
+          <button class="add-row" onclick="addPlan()">+ Додати крок</button>
+        </div>
+      </section>
+
+      <!-- КРОК 7: ПРОДУКТ -->
+      <section class="page" id="p7">
+        <div class="banner">
+          <h2>Крок 7: Практичний результат (Продукт)</h2>
+          <p>Що я створю в результаті?</p>
+        </div>
+        <div class="field">
+          <label>Опиши продукт (презентація, макет, буклет, відео):</label>
+          <textarea id="product" placeholder="Я створю..." oninput="save()"></textarea>
+        </div>
+        <div class="field">
+          <label>Джерела інформації:</label>
+          <div id="sourcesList"></div>
+          <button class="add-row" onclick="addSource()">+ Додати джерело</button>
+        </div>
+      </section>
+
+      <!-- КРОК 8: ЗВІТ ТА ВИСНОВКИ -->
+      <section class="page" id="p8">
+        <div class="banner">
+          <h2>Крок 8: Висновки та звіт</h2>
+          <p>Аналіз результатів та підготовка до захисту.</p>
+        </div>
+        <div class="field">
+          <label>Висновки (що вдалося, які труднощі):</label>
+          <textarea id="conclusion" placeholder="Отже, виявилося, що..." oninput="save();buildReport()"></textarea>
+        </div>
+        
+        <div class="report" id="report">
+          <h2>Звіт Дослідника</h2>
+          <div class="meta" id="r-meta" style="text-align:center;margin-bottom:12px;font-weight:800;">—</div>
+          
+          <div class="row"><h3>Дослідник</h3><p id="r-name">—</p></div>
+          <div class="row"><h3>Тема проєкту</h3><p id="r-topic">—</p></div>
+          <div class="row"><h3>Проблема (актуальність)</h3><p id="r-problem">—</p></div>
+          <div class="row"><h3>Мета</h3><p id="r-goal">—</p></div>
+          <div class="row"><h3>Завдання</h3><ul id="r-tasks"></ul></div>
+          <div class="row"><h3>Гіпотеза</h3><p id="r-hypo">—</p></div>
+          <div class="row"><h3>Об'єкт і предмет</h3><p id="r-objsubj">—</p></div>
+          <div class="row"><h3>Методи та план</h3><p id="r-methods">—</p><ul id="r-plan"></ul></div>
+          <div class="row"><h3>Продукт</h3><p id="r-product">—</p></div>
+          <div class="row"><h3>Джерела</h3><ul id="r-sources"></ul></div>
+          <div class="row"><h3>Висновки</h3><p id="r-conclusion">—</p></div>
+        </div>
+
+        <button class="btn btn-save" style="margin-top:16px;" onclick="window.print()">Зберегти у PDF</button>
+        <button class="btn" style="margin-top:8px;background:#fee2e2;color:#dc2626;width:100%;justify-content:center;" onclick="resetAll()">Почати спочатку</button>
+      </section>
+
+    </main>
+
+    <footer>
+      <button class="btn btn-back" id="backBtn" onclick="step(-1)" style="visibility:hidden;">Назад</button>
+      <button class="btn btn-next" id="nextBtn" onclick="step(1)">Далі</button>
+    </footer>
+  </section>
+
+</div>
+
+<script>
+// --- ЗБЕРЕЖЕННЯ ТА СТАН ---
+const KEY = 'researcher_project_v1';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function startNotebook() {
+  save();
+  showScreen('main');
+  go(1);
+}
+
+let cur = 1;
+function go(n) {
+  if (n < 1 || n > 8) return;
+  cur = n;
+  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === n - 1));
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.toggle('active', i === n - 1);
+    s.classList.toggle('done', i < n - 1);
+  });
+  document.getElementById('backBtn').style.visibility = n === 1 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').style.display = n === 8 ? 'none' : 'inline-flex';
+  if (n === 8) buildReport();
+  document.querySelector('main').scrollTop = 0;
+}
+function step(d) { go(cur + d); }
+
+// --- ДИНАМІЧНІ СПИСКИ ---
+function addTask(text = '') {
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.innerHTML = `
+    <input type="text" value="${text}" placeholder="Завдання..." oninput="save()">
+    <button class="del" onclick="this.parentElement.remove();save()">×</button>
+  `;
+  document.getElementById('tasksList').appendChild(div);
+}
+
+function addPlan(text = '') {
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.innerHTML = `
+    <input type="text" value="${text}" placeholder="Крок плану..." oninput="save()">
+    <button class="del" onclick="this.parentElement.remove();save()">×</button>
+  `;
+  document.getElementById('planList').appendChild(div);
+}
+
+function addSource(text = '') {
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.innerHTML = `
+    <input type="text" value="${text}" placeholder="Автор, назва, рік..." oninput="save()">
+    <button class="del" onclick="this.parentElement.remove();save()">×</button>
+  `;
+  document.getElementById('sourcesList').appendChild(div);
+}
+
+function selectTopic(val) {
+  if (val) {
+    document.getElementById('topic').value = val;
+    save();
+  }
+}
+
+// --- ЗБЕРЕЖЕННЯ ---
+function collectList(id) {
+  return [...document.querySelectorAll(`#${id} .item-row input`)].map(i => i.value).filter(v => v.trim());
+}
+
+function save() {
+  const data = {
+    name: document.getElementById('name').value,
+    klass: document.getElementById('klass').value,
+    date: document.getElementById('date').value,
+    topic: document.getElementById('topic').value,
+    problem: document.getElementById('problem').value,
+    goal: document.getElementById('goal').value,
+    hypo: document.getElementById('hypo').value,
+    obj: document.getElementById('obj').value,
+    subj: document.getElementById('subj').value,
+    methods: document.getElementById('methods').value,
+    product: document.getElementById('product').value,
+    conclusion: document.getElementById('conclusion').value,
+    tasks: collectList('tasksList'),
+    plan: collectList('planList'),
+    sources: collectList('sourcesList')
+  };
+  localStorage.setItem(KEY, JSON.stringify(data));
+  if (cur === 8) buildReport();
+}
+
+// --- ЗАВАНТАЖЕННЯ ---
+function load() {
+  const d = JSON.parse(localStorage.getItem(KEY) || '{}');
+  if (d.name) document.getElementById('name').value = d.name;
+  if (d.klass) document.getElementById('klass').value = d.klass;
+  if (d.date) document.getElementById('date').value = d.date;
+  if (d.topic) document.getElementById('topic').value = d.topic;
+  if (d.problem) document.getElementById('problem').value = d.problem;
+  if (d.goal) document.getElementById('goal').value = d.goal;
+  if (d.hypo) document.getElementById('hypo').value = d.hypo;
+  if (d.obj) document.getElementById('obj').value = d.obj;
+  if (d.subj) document.getElementById('subj').value = d.subj;
+  if (d.methods) document.getElementById('methods').value = d.methods;
+  if (d.product) document.getElementById('product').value = d.product;
+  if (d.conclusion) document.getElementById('conclusion').value = d.conclusion;
+  
+  if (d.tasks) d.tasks.forEach(addTask);
+  if (d.plan) d.plan.forEach(addPlan);
+  if (d.sources) d.sources.forEach(addSource);
+}
+
+// --- ЗВІТ ---
+function buildReport() {
+  const v = id => document.getElementById(id).value;
+  document.getElementById('r-name').textContent = `${v('name') || 'Дослідник'} (${v('klass') || 'Клас не вказано'})`;
+  document.getElementById('r-meta').textContent = v('date') || 'Дата не вказана';
+  document.getElementById('r-topic').textContent = v('topic') || '—';
+  document.getElementById('r-problem').textContent = v('problem') || '—';
+  document.getElementById('r-goal').textContent = v('goal') || '—';
+  document.getElementById('r-hypo').textContent = v('hypo') || '—';
+  document.getElementById('r-objsubj').textContent = `Об'єкт: ${v('obj') || '—'}. Предмет: ${v('subj') || '—'}.`;
+  document.getElementById('r-methods').textContent = v('methods') || '—';
+  document.getElementById('r-product').textContent = v('product') || '—';
+  document.getElementById('r-conclusion').textContent = v('conclusion') || '—';
+
+  const ulTasks = document.getElementById('r-tasks');
+  ulTasks.innerHTML = collectList('tasksList').map(t => `<li>${t}</li>`).join('');
+  
+  const ulPlan = document.getElementById('r-plan');
+  ulPlan.innerHTML = collectList('planList').map(t => `<li>${t}</li>`).join('');
+  
+  const ulSources = document.getElementById('r-sources');
+  ulSources.innerHTML = collectList('sourcesList').map(t => `<li>${t}</li>`).join('');
+}
+
+function resetAll() {
+  if (confirm('Почати спочатку? Усі дані буде видалено.')) {
+    localStorage.removeItem(KEY);
+    location.reload();
+  }
+}
+
+// --- ІНІЦІАЛІЗАЦІЯ ---
+window.addEventListener('load', () => {
+  const d = new Date();
+  document.getElementById('date').value = d.toISOString().split('T')[0];
+  
+  if (localStorage.getItem(KEY)) {
+    load();
+    showScreen('main');
+  } else {
+    addTask(); addTask();
+    addPlan(); addPlan();
+    addSource();
+  }
+  
+  window.addEventListener('beforeunload', save);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+});
+</script>
+</body>
+</html>
