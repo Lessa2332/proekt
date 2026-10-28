@@ -5,16 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
 <meta name="theme-color" content="#7c3aed">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Записник Дослідника">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="format-detection" content="telephone=no">
-<meta name="referrer" content="no-referrer">
-<meta name="robots" content="noindex, nofollow, noarchive">
-<meta name="description" content="Безпечний офлайн-записник для навчальних проєктів. Авторка: Олеся Бохонок.">
-<meta name="author" content="Олеся Бохонок">
-<title>Записник Дослідника · Навчальний проєкт</title>
+<title>Записник Дослідника · Лабораторія</title>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
   --lime:#84cc16;--lime-dark:#4d7c0f;--lime-light:#f7fee7;
@@ -23,7 +16,7 @@
   --blue:#0284c7;--blue-light:#e0f2fe;
   --red:#dc2626;--red-light:#fee2e2;
   --ink:#0f172a;--muted:#64748b;
-  --surface:rgba(255,255,255,.72);
+  --surface:rgba(255,255,255,.85);
   --surface-solid:#ffffff;
   --glass:rgba(255,255,255,.55);
   --border:rgba(148,163,184,.28);
@@ -39,13 +32,7 @@
   --anim:.28s;
 }
 body.a11y{--fs-base:19px}
-body.a11y .step-lbl{font-size:.72rem}
-body.a11y .sub-hint{font-size:.92rem}
-body.a11y .hint{font-size:.95rem}
-body.a11y input,body.a11y textarea,body.a11y select{font-size:18px;padding:15px 18px}
-body.a11y .btn{padding:16px 24px;font-size:1.05rem}
 body.contrast{--surface:#fff;--surface-solid:#fff;--glass:#fff;--border:#0f172a;--muted:#1e293b;--ink:#000}
-body.contrast .app{border:3px solid #000;box-shadow:none}
 body.reduced *{animation:none!important;transition:none!important}
 body.dyslexic{font-family:'Comic Sans MS','Trebuchet MS',Verdana,sans-serif!important;letter-spacing:.03em;word-spacing:.14em;line-height:1.75}
 
@@ -54,28 +41,22 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
 body{
   font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;
   font-size:var(--fs-base);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(163,230,53,.28), transparent 60%),
+  background:radial-gradient(1200px 600px at 10% -10%, rgba(163,230,53,.28), transparent 60%),
     radial-gradient(1000px 700px at 110% 10%, rgba(255,140,56,.26), transparent 55%),
-    radial-gradient(900px 800px at 50% 120%, rgba(124,58,237,.20), transparent 60%),
     linear-gradient(135deg,#f7fee7 0%,#fff7ed 50%,#f5f3ff 100%);
   background-attachment:fixed;
   color:var(--ink);min-height:100vh;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
   padding:calc(10px + var(--safe-top)) calc(10px + var(--safe-right)) calc(10px + var(--safe-bottom)) calc(10px + var(--safe-left));
   line-height:1.55;overscroll-behavior-y:none;
-  -webkit-font-smoothing:antialiased;
 }
 *:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
 
 .app{
-  width:100%;max-width:720px;
-  background:var(--surface);
-  backdrop-filter:blur(24px) saturate(180%);
-  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  width:100%;max-width:720px;background:var(--surface);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border:1px solid var(--border);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-lg);
-  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-direction:column;
   min-height:min(880px,calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom)));
   max-height:calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom));
   position:relative;
@@ -84,91 +65,97 @@ body{
 .screen.active{display:flex}
 
 /* INTRO */
-.intro-screen{
-  padding:calc(28px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  background: linear-gradient(160deg,#7c3aed 0%,#a855f7 35%,#f97316 75%,#84cc16 130%);
-  color:#fff;align-items:center;justify-content:center;text-align:center;
-}
+.intro-screen{padding:calc(28px + var(--safe-top)) 22px;overflow-y:auto;background:linear-gradient(160deg,#7c3aed,#a855f7,#f97316,#84cc16);color:#fff;align-items:center;justify-content:center;text-align:center}
 .intro-inner{width:100%;max-width:480px;margin:auto}
-.intro-title{font-family:'Comfortaa',cursive;font-size:1.5rem;margin-bottom:10px;}
-.intro-sub{font-size:.95rem;font-weight:800;margin-bottom:22px;}
-.intro-start{width:100%;padding:17px;border:none;border-radius:16px;font-weight:900;font-size:1.1rem;color:#fff;background:linear-gradient(135deg,#84cc16,#4d7c0f);cursor:pointer;}
+.intro-title{font-family:'Comfortaa',cursive;font-size:1.6rem;margin-bottom:10px}
+.intro-start{width:100%;padding:17px;border:none;border-radius:16px;font-weight:900;font-size:1.1rem;color:#fff;background:linear-gradient(135deg,#84cc16,#4d7c0f);cursor:pointer;margin-top:20px}
 
-/* WELCOME & CONSENT */
-.welcome-screen,.consent-screen{
-  padding:calc(24px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
-  overflow-y:auto;background:linear-gradient(160deg,#a3e635 0%,#facc15 45%,#ff8c38 80%,#7c3aed 140%);
-  color:#fff;align-items:center;justify-content:center;
-}
-.welcome-inner,.consent-inner{width:100%;max-width:480px;margin:auto}
-.welcome-card,.consent-card{background:#fff;border-radius:22px;padding:22px;color:var(--ink);text-align:left;}
+/* WELCOME */
+.welcome-screen{padding:calc(24px + var(--safe-top)) 22px;overflow-y:auto;background:linear-gradient(160deg,#a3e635,#facc15,#ff8c38,#7c3aed);color:#fff;align-items:center;justify-content:center}
+.welcome-inner{width:100%;max-width:480px;margin:auto}
+.welcome-card{background:#fff;border-radius:22px;padding:22px;color:var(--ink)}
 .field{margin-bottom:18px}
 .field label{display:block;font-weight:800;color:#334155;margin-bottom:6px;font-size:.92rem}
-input[type=text],input[type=date],textarea,select{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:14px;font-family:inherit;font-size:16px;background:#fff;outline:none;box-shadow:var(--shadow-sm)}
-textarea{resize:vertical;min-height:82px;}
-.hint{font-size:.8rem;color:#475569;background:rgba(241,245,249,.75);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:8px;}
+input[type=text],input[type=date],input[type=number],textarea,select{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:14px;font-family:inherit;font-size:16px;background:#fff;outline:none}
+textarea{resize:vertical;min-height:82px}
 
 /* HEADER & NAV */
-header{background:linear-gradient(115deg,#a3e635 0%,#facc15 35%,#ff8c38 75%,#7c3aed 130%);padding:calc(14px + var(--safe-top)) 14px 14px;color:#fff;flex-shrink:0;}
-.header-top{display:flex;align-items:center;justify-content:space-between;}
-header h1{font-family:'Comfortaa',cursive;font-size:1.1rem;}
-.steps{display:flex;background:var(--glass);border-bottom:1px solid var(--border);padding:10px 4px;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(16px);}
-.step{flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px;}
-.step-num{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--muted);border:2px solid var(--border);font-weight:900;display:flex;align-items:center;justify-content:center;}
-.step.active .step-num{background:var(--orange);color:#fff;}
-.step-lbl{font-size:.58rem;font-weight:800;color:var(--muted);text-transform:uppercase;text-align:center;}
-.step.active .step-lbl{color:var(--orange-dark);}
+header{background:linear-gradient(115deg,#a3e635,#facc15,#ff8c38,#7c3aed);padding:calc(14px + var(--safe-top)) 14px 14px;color:#fff;flex-shrink:0}
+header h1{font-family:'Comfortaa',cursive;font-size:1.1rem}
+.steps{display:flex;background:var(--glass);border-bottom:1px solid var(--border);padding:10px 4px;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(16px)}
+.step{flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px}
+.step-num{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--muted);border:2px solid var(--border);font-weight:900;display:flex;align-items:center;justify-content:center}
+.step.active .step-num{background:var(--orange);color:#fff}
+.step-lbl{font-size:.55rem;font-weight:800;color:var(--muted);text-transform:uppercase;text-align:center}
+.step.active .step-lbl{color:var(--orange-dark)}
 
-main{padding:20px 16px;flex:1;overflow-y:auto;}
+main{padding:20px 16px;flex:1;overflow-y:auto}
 .page{display:none;animation:fade var(--anim) ease}
 .page.active{display:block}
-.banner{background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(124,58,237,.20));border:1.5px solid rgba(124,58,237,.42);border-radius:var(--radius);padding:14px;margin-bottom:18px;}
-.banner h2{font-family:'Comfortaa',cursive;color:var(--violet-dark);font-size:1.02rem;}
+.banner{background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(124,58,237,.20));border:1.5px solid rgba(124,58,237,.42);border-radius:var(--radius);padding:14px;margin-bottom:18px}
+.banner h2{font-family:'Comfortaa',cursive;color:var(--violet-dark);font-size:1.02rem}
 
-.item-row{display:grid;grid-template-columns:1fr 76px 34px;gap:7px;margin-bottom:9px;align-items:center;}
-.item-row input{padding:11px;}
-.item-row .del{width:34px;height:34px;border-radius:50%;background:#fee2e2;color:#dc2626;border:none;font-weight:900;cursor:pointer;}
-.add-row{display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(132,204,22,.14);border:2px dashed var(--lime);color:var(--lime-dark);padding:12px;border-radius:14px;font-weight:900;cursor:pointer;width:100%;}
+.item-row{display:grid;grid-template-columns:1fr 76px 34px;gap:7px;margin-bottom:9px;align-items:center}
+.item-row input{padding:11px}
+.item-row .del{width:34px;height:34px;border-radius:50%;background:#fee2e2;color:#dc2626;border:none;font-weight:900;cursor:pointer}
+.add-row{display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(132,204,22,.14);border:2px dashed var(--lime);color:var(--lime-dark);padding:12px;border-radius:14px;font-weight:900;cursor:pointer;width:100%;margin-top:8px}
 
-/* ПРАКТИЧНА ЧАСТИНА */
-.photo-zone{background:linear-gradient(135deg,rgba(224,242,254,.72),rgba(224,242,254,.42));border:2px dashed var(--blue);border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:16px;}
-.photo-buttons{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+/* PHOTO & LAB */
+.photo-zone{background:linear-gradient(135deg,rgba(224,242,254,.72),rgba(224,242,254,.42));border:2px dashed var(--blue);border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:16px}
+.photo-buttons{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .photo-zone input[type=file]{display:none}
-.photo-label{display:inline-flex;align-items:center;gap:8px;color:#fff;padding:12px 18px;border-radius:13px;font-weight:900;font-size:.88rem;cursor:pointer;flex:1;min-width:140px;justify-content:center;}
-.photo-label--camera{background:linear-gradient(135deg,#0284c7,#075985);}
-.photo-label--gallery{background:linear-gradient(135deg,#7c3aed,#5b21b6);}
-.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px;}
-.photo-thumb{position:relative;border-radius:13px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.14);aspect-ratio:1/1;background:#f1f5f9;}
-.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.photo-thumb .photo-del{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;background:rgba(220,38,38,.94);color:#fff;border:2px solid #fff;font-weight:900;font-size:1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.photo-label{display:inline-flex;align-items:center;gap:8px;color:#fff;padding:12px 18px;border-radius:13px;font-weight:900;font-size:.88rem;cursor:pointer;flex:1;min-width:140px;justify-content:center}
+.photo-label--camera{background:linear-gradient(135deg,#0284c7,#075985)}
+.photo-label--gallery{background:linear-gradient(135deg,#7c3aed,#5b21b6)}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}
+.photo-thumb{position:relative;border-radius:13px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.14);aspect-ratio:1/1;background:#f1f5f9}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-thumb .photo-del{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;background:rgba(220,38,38,.94);color:#fff;border:2px solid #fff;font-weight:900;cursor:pointer}
 
-.link-item{display:flex;align-items:center;gap:10px;background:#fff;padding:12px;border:2px solid var(--border);border-radius:14px;margin-bottom:9px;}
-.link-item input{flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;}
-.link-item .qr-btn{background:var(--violet);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:900;cursor:pointer;font-size:.8rem;}
+.link-item{display:flex;align-items:center;gap:10px;background:#fff;padding:12px;border:2px solid var(--border);border-radius:14px;margin-bottom:9px;flex-wrap:wrap}
+.link-item input{flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;min-width:150px}
+.link-item .qr-btn{background:var(--violet);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:900;cursor:pointer;font-size:.8rem}
+.qr-container{text-align:center;margin-top:10px;padding:12px;background:#fff;border-radius:14px;border:2px solid var(--border);width:100%}
+.qr-container img{max-width:120px;height:auto;border:1px solid #eee;border-radius:8px}
 
-.qr-container{text-align:center;margin-top:10px;padding:12px;background:#fff;border-radius:14px;border:2px solid var(--border);}
-.qr-container img{max-width:150px;height:auto;border:1px solid #eee;border-radius:8px;}
+.chart-container{background:#fff;padding:15px;border-radius:14px;border:2px solid var(--border);margin-bottom:15px}
+.chart-container canvas{max-height:200px}
 
-footer{display:flex;justify-content:space-between;padding:12px 14px;background:var(--glass);border-top:1px solid var(--border);}
-.btn{padding:13px 20px;border-radius:14px;font-weight:900;border:none;cursor:pointer;display:inline-flex;align-items:center;}
-.btn-back{background:#fff;color:#475569;}
-.btn-next{background:var(--orange);color:#fff;}
-.btn-save{background:var(--lime);color:#fff;width:100%;justify-content:center;}
+/* FOOTER & BTNS */
+footer{display:flex;justify-content:space-between;padding:12px 14px;background:var(--glass);border-top:1px solid var(--border)}
+.btn{padding:13px 20px;border-radius:14px;font-weight:900;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-back{background:#fff;color:#475569}
+.btn-next{background:var(--orange);color:#fff}
+.btn-save{background:var(--lime);color:#fff;width:100%}
+.btn-present{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;width:100%;margin-bottom:10px}
 
-.report{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md);}
-.report h2{text-align:center;color:var(--orange-dark);}
-.report .row{margin-bottom:8px;padding:8px 11px;background:#f8fafc;border-left:3px solid var(--orange);border-radius:6px;}
-.report .row h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;}
-.report .row p,.report ul li{font-size:.86rem;font-weight:700;white-space:pre-wrap;}
+/* REPORT & PRESENTATION */
+.report{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md)}
+.report h2{text-align:center;color:var(--orange-dark)}
+.report .row{margin-bottom:8px;padding:8px 11px;background:#f8fafc;border-left:3px solid var(--orange);border-radius:6px}
+.report .row h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.report .row p,.report ul li{font-size:.86rem;font-weight:700;white-space:pre-wrap}
 
-.r-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
-.r-photo-item{position:relative;border-radius:8px;overflow:hidden;border:1.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.12);aspect-ratio:1/1;background:#f1f5f9;}
-.r-photo-item img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Presentation Mode */
+.presentation-overlay{position:fixed;inset:0;background:#0f172a;color:#fff;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px;text-align:center}
+.presentation-overlay.active{display:flex}
+.slide{display:none;width:100%;max-width:800px;animation:fade .3s ease}
+.slide.active{display:block}
+.slide h1{font-family:'Comfortaa',cursive;font-size:2rem;margin-bottom:20px;color:#a3e635}
+.slide h2{font-size:1.5rem;margin-bottom:15px;color:#facc15}
+.slide p{font-size:1.2rem;line-height:1.6;margin-bottom:15px;color:#e2e8f0}
+.slide img{max-width:100%;max-height:50vh;border-radius:15px;margin-bottom:15px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.nav-btns{position:absolute;bottom:30px;display:flex;gap:20px}
+.nav-btn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);color:#fff;padding:12px 24px;border-radius:30px;font-weight:900;cursor:pointer;font-size:1rem}
+.nav-btn:hover{background:rgba(255,255,255,.3)}
+.close-btn{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1.5rem;width:50px;height:50px;border-radius:50%;cursor:pointer}
 
-/* PRINT */
+.stars{display:flex;gap:5px;font-size:2rem;cursor:pointer}
+.star{color:#cbd5e1;transition:color .2s}
+.star.active{color:#facc15}
+
 @media print{
-  .app, .screen, header, .steps, footer, .banner, .btn, .reset, .photo-zone, .add-row, .item-row .del, .link-item .qr-btn { display:none !important; }
+  .app, .screen, header, .steps, footer, .banner, .btn, .reset, .photo-zone, .add-row, .item-row .del, .link-item .qr-btn, .chart-container, .presentation-overlay, .stars { display:none !important; }
   #p8 { display:block !important; }
   .report { border:none; box-shadow:none; padding:0; }
   body { background:#fff; }
@@ -179,259 +166,214 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
 
 <div class="app">
 
-  <!-- ЕКРАН 0: ВІТАННЯ -->
+  <!-- INTRO -->
   <section class="screen intro-screen active" id="screen-intro">
     <div class="intro-inner">
-      <h1 class="intro-title">Записник Дослідника</h1>
-      <p class="intro-sub">Твій помічник для створення справжнього навчального проєкту!</p>
+      <h1 class="intro-title">Лабораторія Дослідника</h1>
+      <p style="font-size:1rem;font-weight:800;margin-bottom:20px;">Створи яскравий проєкт, візуалізуй дані та підготуйся до захисту!</p>
       <button class="intro-start" onclick="showScreen('welcome')">Почати!</button>
     </div>
   </section>
 
-  <!-- ЕКРАН 1: ЗНАЙОМСТВО -->
+  <!-- WELCOME -->
   <section class="screen welcome-screen" id="screen-welcome">
     <div class="welcome-inner">
       <div class="welcome-card">
         <h2 style="margin-bottom:16px;text-align:center;">Давай познайомимося!</h2>
-        <div class="field">
-          <label>Ім'я дослідника</label>
-          <input type="text" id="name" placeholder="Наприклад: Оленка">
-        </div>
-        <div class="field">
-          <label>Клас</label>
-          <input type="text" id="klass" placeholder="Наприклад: 5-А">
-        </div>
-        <div class="field">
-          <label>Дата проєкту</label>
-          <input type="date" id="date">
-        </div>
-        <button class="btn btn-next" style="width:100%;justify-content:center;" onclick="startNotebook()">Почати проєкт</button>
+        <div class="field"><label>Ім'я дослідника</label><input type="text" id="name" placeholder="Наприклад: Оленка"></div>
+        <div class="field"><label>Клас</label><input type="text" id="klass" placeholder="Наприклад: 5-А"></div>
+        <div class="field"><label>Дата проєкту</label><input type="date" id="date"></div>
+        <button class="btn btn-next" style="width:100%" onclick="startNotebook()">Почати проєкт</button>
       </div>
     </div>
   </section>
 
-  <!-- ЕКРАН 2: ОСНОВНИЙ -->
+  <!-- MAIN -->
   <section class="screen" id="screen-main">
-    <header>
-      <div class="header-top">
-        <h1>Записник Дослідника</h1>
-        <div style="font-size:.7rem;font-weight:800;">Авторка: Олеся Бохонок</div>
-      </div>
-    </header>
+    <header><div class="header-top"><h1>Записник Дослідника</h1><div style="font-size:.7rem;font-weight:800;">Олеся Бохонок</div></div></header>
 
-    <!-- НАВІГАЦІЯ -->
-    <nav class="steps" aria-label="Кроки">
+    <nav class="steps">
       <button class="step active" onclick="go(1)"><span class="step-num">1</span><span class="step-lbl">Тема</span></button>
       <button class="step" onclick="go(2)"><span class="step-num">2</span><span class="step-lbl">Проблема</span></button>
       <button class="step" onclick="go(3)"><span class="step-num">3</span><span class="step-lbl">Мета</span></button>
       <button class="step" onclick="go(4)"><span class="step-num">4</span><span class="step-lbl">Гіпотеза</span></button>
       <button class="step" onclick="go(5)"><span class="step-num">5</span><span class="step-lbl">Об'єкт</span></button>
       <button class="step" onclick="go(6)"><span class="step-num">6</span><span class="step-lbl">План</span></button>
-      <button class="step" onclick="go(7)"><span class="step-num">7</span><span class="step-lbl">Продукт</span></button>
-      <button class="step" onclick="go(8)"><span class="step-num">8</span><span class="step-lbl">Звіт</span></button>
+      <button class="step" onclick="go(7)"><span class="step-num">7</span><span class="step-lbl">Практика</span></button>
+      <button class="step" onclick="go(8)"><span class="step-num">8</span><span class="step-lbl">Захист</span></button>
     </nav>
 
     <main id="mainContent">
-      
-      <!-- КРОК 1: ТЕМА -->
+      <!-- КРОК 1 -->
       <section class="page active" id="p1">
-        <div class="banner">
-          <h2>Крок 1: Титульна сторінка / Тема</h2>
-          <p>Обери тему зі списку або впиши свою.</p>
-        </div>
+        <div class="banner"><h2>Крок 1: Тема</h2><p>Обери тему або впиши свою.</p></div>
         <div class="field">
-          <label>Обери готову тему проєкту:</label>
+          <label>Готова тема:</label>
           <select id="topicSelect" onchange="applyTopicData(this.value)">
-            <option value="">-- Обрати з переліку --</option>
-            <option value="t1">Африка: материк контрастів та унікальної природи</option>
-            <option value="t2">Великі водні артерії Африки: річки Ніл та Конго</option>
-            <option value="t3">Унікальні водойми Африки: озера Вікторія, Танганьїка, Чад</option>
-            <option value="t4">Водоспад Вікторія (Мосі-оа-Тунья) — перлина Африки</option>
-            <option value="t5">Найвідоміші природні об'єкти Африки зі Світової спадщини ЮНЕСКО</option>
-            <option value="t6">Порушення природної рівноваги в Африці та шляхи її відновлення</option>
-            <option value="t7">Давид Лівінгстон — видатний дослідник Африки</option>
-            <option value="t8">Вулкан Кіліманджаро — найвища точка Африки</option>
+            <option value="">-- Обрати --</option>
+            <option value="t1">Африка: материк контрастів</option>
+            <option value="t2">Річки Ніл та Конго</option>
+            <option value="t3">Озера Вікторія, Танганьїка, Чад</option>
+            <option value="t4">Водоспад Вікторія</option>
+            <option value="t5">Світова спадщина ЮНЕСКО в Африці</option>
+            <option value="t6">Порушення рівноваги в Африці</option>
+            <option value="t7">Давид Лівінгстон</option>
+            <option value="t8">Вулкан Кіліманджаро</option>
           </select>
         </div>
-        <div class="field">
-          <label>Або впиши свою назву проєкту:</label>
-          <input type="text" id="topic" placeholder="Назва мого проєкту..." oninput="save()">
-        </div>
+        <div class="field"><label>Своя назва:</label><input type="text" id="topic" placeholder="Назва..." oninput="save()"></div>
       </section>
 
-      <!-- КРОК 2: ПРОБЛЕМА -->
+      <!-- КРОК 2 -->
       <section class="page" id="p2">
-        <div class="banner">
-          <h2>Крок 2: Проблема (актуальність)</h2>
-          <p>Чому це важливо дослідити?</p>
-        </div>
-        <div class="field">
-          <label>Опиши проблему:</label>
-          <textarea id="problem" placeholder="Ця тема є важливою, тому що..." oninput="save()"></textarea>
-        </div>
+        <div class="banner"><h2>Крок 2: Проблема</h2><p>Чому це важливо?</p></div>
+        <textarea id="problem" placeholder="Ця тема важлива, тому що..." oninput="save()"></textarea>
       </section>
 
-      <!-- КРОК 3: МЕТА ТА ЗАВДАННЯ -->
+      <!-- КРОК 3 -->
       <section class="page" id="p3">
-        <div class="banner">
-          <h2>Крок 3: Мета та завдання (SMART)</h2>
-          <p>Чого я хочу досягти і як саме?</p>
-        </div>
-        <div class="field">
-          <label>Мета проєкту:</label>
-          <textarea id="goal" placeholder="Мета: дослідити..." oninput="save()"></textarea>
-        </div>
-        <div class="field">
-          <label>Завдання (кроки до мети):</label>
-          <div id="tasksList"></div>
-          <button class="add-row" onclick="addTask()">+ Додати завдання</button>
-        </div>
+        <div class="banner"><h2>Крок 3: Мета та завдання</h2></div>
+        <label>Мета:</label>
+        <textarea id="goal" placeholder="Мета: дослідити..." oninput="save()"></textarea>
+        <label>Завдання:</label>
+        <div id="tasksList"></div>
+        <button class="add-row" onclick="addTask()">+ Додати завдання</button>
       </section>
 
-      <!-- КРОК 4: ГІПОТЕЗА -->
+      <!-- КРОК 4 -->
       <section class="page" id="p4">
-        <div class="banner">
-          <h2>Крок 4: Гіпотеза</h2>
-          <p>Припущення, яке треба довести або спростувати.</p>
-        </div>
-        <div class="field">
-          <label>Моя гіпотеза:</label>
-          <textarea id="hypo" placeholder="Я припускаю, що..." oninput="save()"></textarea>
-        </div>
+        <div class="banner"><h2>Крок 4: Гіпотеза</h2></div>
+        <textarea id="hypo" placeholder="Я припускаю, що..." oninput="save()"></textarea>
       </section>
 
-      <!-- КРОК 5: ОБ'ЄКТ ТА ПРЕДМЕТ -->
+      <!-- КРОК 5 -->
       <section class="page" id="p5">
-        <div class="banner">
-          <h2>Крок 5: Об'єкт і предмет дослідження</h2>
-          <p>Що саме я вивчаю?</p>
-        </div>
-        <div class="field">
-          <label>Об'єкт дослідження (загальне):</label>
-          <input type="text" id="obj" placeholder="Наприклад: природа Африки..." oninput="save()">
-        </div>
-        <div class="field">
-          <label>Предмет дослідження (конкретне):</label>
-          <input type="text" id="subj" placeholder="Наприклад: водойми Африки..." oninput="save()">
-        </div>
+        <div class="banner"><h2>Крок 5: Об'єкт і предмет</h2></div>
+        <label>Об'єкт:</label><input type="text" id="obj" placeholder="Загальне..." oninput="save()">
+        <label>Предмет:</label><input type="text" id="subj" placeholder="Конкретне..." oninput="save()">
       </section>
 
-      <!-- КРОК 6: ПЛАН -->
+      <!-- КРОК 6 -->
       <section class="page" id="p6">
-        <div class="banner">
-          <h2>Крок 6: План реалізації та методи</h2>
-          <p>Як я буду це робити? (Заповнюється самостійно)</p>
-        </div>
-        <div class="field">
-          <label>Методи (спостереження, аналіз, пошук):</label>
-          <textarea id="methods" placeholder="Які методи використаю..." oninput="save()"></textarea>
-        </div>
-        <div class="field">
-          <label>Покроковий план:</label>
-          <div id="planList"></div>
-          <button class="add-row" onclick="addPlan()">+ Додати крок</button>
-        </div>
+        <div class="banner"><h2>Крок 6: План та методи</h2></div>
+        <label>Методи:</label><textarea id="methods" placeholder="Спостереження, аналіз..." oninput="save()"></textarea>
+        <label>План:</label><div id="planList"></div>
+        <button class="add-row" onclick="addPlan()">+ Крок</button>
       </section>
 
-      <!-- КРОК 7: ПРОДУКТ (ЯСКРАВА ПРАКТИЧНА ЧАСТИНА) -->
+      <!-- КРОК 7: ПРАКТИКА (РОЗШИРЕНА) -->
       <section class="page" id="p7">
         <div class="banner" style="background:linear-gradient(135deg,rgba(255,140,56,.14),rgba(255,140,56,.22));border-color:rgba(255,107,0,.42)">
-          <h2 style="color:var(--orange-dark)">Крок 7: Практичний результат (Продукт)</h2>
-          <p style="color:var(--orange-dark)">Що я створю в результаті? Додай фото, посилання та QR-коди!</p>
+          <h2 style="color:var(--orange-dark)">Крок 7: Практика та Візуалізація</h2>
+          <p style="color:var(--orange-dark)">Додай фото, графіки та посилання для захисту!</p>
         </div>
         
+        <div class="field"><label>Опис продукту:</label><textarea id="product" placeholder="Я створю..." oninput="save()"></textarea></div>
+
+        <!-- ГОЛОВНЕ ФОТО -->
         <div class="field">
-          <label>Опиши продукт (презентація, макет, буклет, відео):</label>
-          <textarea id="product" placeholder="Я створю..." oninput="save()"></textarea>
+          <label>🌟 Головне фото (обкладинка проєкту)</label>
+          <div class="photo-zone" style="border-color:var(--orange);background:rgba(255,140,56,.1)">
+            <label for="photoCover" class="photo-label photo-label--camera" style="background:linear-gradient(135deg,#ff8c38,#c2410c)">Обрати головне фото</label>
+            <input type="file" id="photoCover" accept="image/*">
+            <div id="coverPreview" style="margin-top:10px;"></div>
+          </div>
         </div>
 
         <!-- ФОТО -->
         <div class="field">
-          <label>📸 Фото мого продукту / досліду</label>
+          <label>📸 Фото досліду (галерея)</label>
           <div class="photo-zone">
             <div class="photo-buttons">
-              <label for="photoCamera" class="photo-label photo-label--camera">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M9 3h6l1 4h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1-4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-                Зробити фото
-              </label>
+              <label for="photoCamera" class="photo-label photo-label--camera">Камера</label>
               <input type="file" id="photoCamera" accept="image/*" capture="environment">
-              <label for="photoGallery" class="photo-label photo-label--gallery">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                Обрати з галереї
-              </label>
+              <label for="photoGallery" class="photo-label photo-label--gallery">Галерея</label>
               <input type="file" id="photoGallery" accept="image/*" multiple>
             </div>
             <div id="photoPreview" class="photo-grid"></div>
           </div>
         </div>
 
+        <!-- ВІЗУАЛІЗАЦІЯ (ДІАГРАМИ) -->
+        <div class="field">
+          <label>📊 Побудуй діаграму для презентації</label>
+          <div class="chart-container">
+            <p style="font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:10px;">Порівняй два показники (наприклад, довжина річок, кількість видів)</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <input type="text" id="chartLabel1" placeholder="Показник 1" oninput="updateChart()">
+              <input type="number" id="chartVal1" placeholder="Значення" oninput="updateChart()">
+              <input type="text" id="chartLabel2" placeholder="Показник 2" oninput="updateChart()">
+              <input type="number" id="chartVal2" placeholder="Значення" oninput="updateChart()">
+            </div>
+            <canvas id="myChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+
         <!-- ПОСИЛАННЯ ТА QR -->
         <div class="field">
-          <label>🔗 Корисні посилання (відео, сайти, статті)</label>
+          <label>🔗 Посилання та QR-коди</label>
           <div id="linksList"></div>
           <button class="add-row" onclick="addLink()">+ Додати посилання</button>
         </div>
 
         <!-- ДЖЕРЕЛА -->
         <div class="field">
-          <label>📚 Джерела інформації (книги, статті, енциклопедії)</label>
+          <label>📚 Джерела інформації</label>
           <div id="sourcesList"></div>
           <button class="add-row" onclick="addSource()">+ Додати джерело</button>
         </div>
-
-        <!-- ШІ-БОТ -->
-        <div class="field">
-          <label>🤖 Чи використовував(ла) ШІ-бота для допомоги?</label>
-          <textarea id="aiHelp" placeholder="Наприклад: Я запитав у ChatGPT про те, як утворюються водоспади..." oninput="save()"></textarea>
-        </div>
       </section>
 
-      <!-- КРОК 8: ЗВІТ ТА ВИСНОВКИ -->
+      <!-- КРОК 8: ЗАХИСТ ТА РЕФЛЕКСІЯ -->
       <section class="page" id="p8">
-        <div class="banner">
-          <h2>Крок 8: Висновки та звіт</h2>
-          <p>Аналіз результатів та підготовка до захисту.</p>
-        </div>
+        <div class="banner"><h2>Крок 8: Захист та Рефлексія</h2><p>Підготуйся до виступу!</p></div>
+        
         <div class="field">
-          <label>Висновки (що вдалося, які труднощі):</label>
+          <label>🎤 Твоя промова (сценарій захисту):</label>
+          <textarea id="speech" placeholder="Автоматично згенерується..." readonly style="background:#f1f5f9;color:#334155;font-weight:700;min-height:150px;"></textarea>
+          <button class="btn" style="background:var(--violet);color:#fff;width:100%;margin-top:8px;" onclick="generateSpeech()">Згенерувати промову</button>
+        </div>
+
+        <div class="field">
+          <label>⭐ Оціни свою роботу:</label>
+          <div class="stars" id="stars">
+            <span class="star" onclick="setRating(1)">★</span>
+            <span class="star" onclick="setRating(2)">★</span>
+            <span class="star" onclick="setRating(3)">★</span>
+            <span class="star" onclick="setRating(4)">★</span>
+            <span class="star" onclick="setRating(5)">★</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>🤔 Що було найважчим?</label>
+          <input type="text" id="hardest" placeholder="Найважче було..." oninput="save()">
+        </div>
+
+        <div class="field">
+          <label>Висновки:</label>
           <textarea id="conclusion" placeholder="Отже, виявилося, що..." oninput="save();buildReport()"></textarea>
         </div>
+
+        <button class="btn btn-present" onclick="startPresentation()">▶ Режим презентації</button>
+        <button class="btn btn-save" style="margin-top:10px;" onclick="window.print()">Зберегти у PDF</button>
         
-        <div class="report" id="report">
+        <div class="report" id="report" style="margin-top:20px;">
           <h2>Звіт Дослідника</h2>
-          <div class="meta" id="r-meta" style="text-align:center;margin-bottom:12px;font-weight:800;">—</div>
-          
+          <div id="coverDisplay" style="margin-bottom:15px;text-align:center;"></div>
+          <div id="r-meta" style="text-align:center;margin-bottom:12px;font-weight:800;">—</div>
           <div class="row"><h3>Дослідник</h3><p id="r-name">—</p></div>
-          <div class="row"><h3>Тема проєкту</h3><p id="r-topic">—</p></div>
-          <div class="row"><h3>Проблема (актуальність)</h3><p id="r-problem">—</p></div>
+          <div class="row"><h3>Тема</h3><p id="r-topic">—</p></div>
+          <div class="row"><h3>Проблема</h3><p id="r-problem">—</p></div>
           <div class="row"><h3>Мета</h3><p id="r-goal">—</p></div>
-          <div class="row"><h3>Завдання</h3><ul id="r-tasks"></ul></div>
           <div class="row"><h3>Гіпотеза</h3><p id="r-hypo">—</p></div>
           <div class="row"><h3>Об'єкт і предмет</h3><p id="r-objsubj">—</p></div>
-          <div class="row"><h3>Методи та план</h3><p id="r-methods">—</p><ul id="r-plan"></ul></div>
           <div class="row"><h3>Продукт</h3><p id="r-product">—</p></div>
-          
-          <!-- ФОТО У ЗВІТІ -->
-          <div class="row" id="r-photo-row" style="display:none">
-            <h3>Фото продукту</h3>
-            <div class="r-photo-grid" id="r-photos"></div>
-          </div>
-
-          <!-- ПОСИЛАННЯ ТА QR У ЗВІТІ -->
-          <div class="row" id="r-links-row" style="display:none">
-            <h3>Посилання та QR-коди</h3>
-            <div id="r-links"></div>
-          </div>
-
-          <div class="row"><h3>Джерела</h3><ul id="r-sources"></ul></div>
-          <div class="row" id="r-ai-row" style="display:none"><h3>Допомога ШІ</h3><p id="r-ai">—</p></div>
+          <div class="row" id="r-photo-row" style="display:none"><h3>Фото</h3><div class="r-photo-grid" id="r-photos"></div></div>
           <div class="row"><h3>Висновки</h3><p id="r-conclusion">—</p></div>
+          <div class="row"><h3>Рефлексія</h3><p id="r-reflection">—</p></div>
         </div>
-
-        <button class="btn btn-save" style="margin-top:16px;" onclick="window.print()">Зберегти у PDF</button>
-        <button class="btn" style="margin-top:8px;background:#fee2e2;color:#dc2626;width:100%;justify-content:center;" onclick="resetAll()">Почати спочатку</button>
       </section>
-
     </main>
 
     <footer>
@@ -439,406 +381,288 @@ footer{display:flex;justify-content:space-between;padding:12px 14px;background:v
       <button class="btn btn-next" id="nextBtn" onclick="step(1)">Далі</button>
     </footer>
   </section>
+</div>
 
+<!-- PRESENTATION OVERLAY -->
+<div class="presentation-overlay" id="presentation">
+  <button class="close-btn" onclick="closePresentation()">×</button>
+  <div class="slide active" id="slide-1">
+    <h1 id="pres-title">Тема проєкту</h1>
+    <p id="pres-author">Автор: —</p>
+    <div id="pres-cover"></div>
+  </div>
+  <div class="slide" id="slide-2">
+    <h2>Проблема та Мета</h2>
+    <p id="pres-problem">—</p>
+    <p id="pres-goal">—</p>
+  </div>
+  <div class="slide" id="slide-3">
+    <h2>Гіпотеза</h2>
+    <p id="pres-hypo">—</p>
+  </div>
+  <div class="slide" id="slide-4">
+    <h2>Дослідження та Фото</h2>
+    <div id="pres-photos" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+  </div>
+  <div class="slide" id="slide-5">
+    <h2>Висновки</h2>
+    <p id="pres-conclusion">—</p>
+  </div>
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="changeSlide(-1)">← Назад</button>
+    <button class="nav-btn" onclick="changeSlide(1)">Далі →</button>
+  </div>
 </div>
 
 <script>
-// --- БАЗА ДАНИХ ТЕМ ---
+// --- ДАНІ ---
 const TOPIC_DATA = {
-  t1: {
-    title: "Африка: материк контрастів та унікальної природи",
-    problem: "Африка — це найспекотніший материк планети, який вражає різноманіттям ландшафтів: від вологих екваторіальних лісів до найбільших пустель світу. Розуміння цих контрастів є важливим для усвідомлення глобальних кліматичних процесів та збереження унікальної природи.",
-    goal: "Дослідити географічні та природні контрасти Африки, з'ясувати, як вони впливають на життя людей та тварин на материку.",
-    hypo: "Я припускаю, що саме географічне положення (перетин екватора) та рельєф зумовлюють надзвичайне різноманіття природних зон Африки.",
-    obj: "Природа материка Африка",
-    subj: "Природні контрасти та зональність Африки"
-  },
-  t2: {
-    title: "Великі водні артерії Африки: річки Ніл та Конго",
-    problem: "Річки Ніл та Конго є життєво важливими для мільйонів людей та екосистем Африки. Вивчення їхнього режиму, господарського значення та екологічних проблем є актуальним для розуміння водних ресурсів материка.",
-    goal: "Порівняти річки Ніл та Конго за їхніми характеристиками, значенням для природи та господарства, а також визначити основні екологічні загрози.",
-    hypo: "Я припускаю, що річка Конго має більший потенціал для гідроенергетики через повноводність, а Ніл відіграє ключову роль у зрошенні посушливих регіонів.",
-    obj: "Водні ресурси материка Африка",
-    subj: "Річки Ніл та Конго як найбільші водні артерії Африки"
-  },
-  t3: {
-    title: "Унікальні водойми Африки: озера Вікторія, Танганьїка, Чад",
-    problem: "Великі африканські озера є унікальними екосистемами, що містять ендемічні види. Вони потерпають від антропогенного впливу. Дослідження цих водойм допоможе зрозуміти шляхи збереження біорізноманіття.",
-    goal: "Дослідити особливості походження, гідрологічного режиму та біологічного різноманіття озер Вікторія, Танганьїка та Чад.",
-    hypo: "Я припускаю, що озеро Танганьїка, як найдавніше, має найбільшу кількість ендемічних видів, а озеро Чад є найбільш вразливим до кліматичних змін через своє мілководдя.",
-    obj: "Озерні екосистеми Африки",
-    subj: "Великі озера Африки: Вікторія, Танганьїка, Чад"
-  },
-  t4: {
-    title: "Водоспад Вікторія (Мосі-оа-Тунья) — перлина Африки",
-    problem: "Водоспад Вікторія є однією з найбільших визначних пам'яток Африки та об'єктом Світової спадщини ЮНЕСКО. Дослідження його природи та туристичного значення є важливим для збереження цього унікального об'єкта.",
-    goal: "Охарактеризувати геологічну будову, гідрологічні особливості та значення водоспаду Вікторія для природи і туризму регіону.",
-    hypo: "Я припускаю, що водоспад Вікторія утворився внаслідок тектонічних рухів та розмиву базальтових порід річкою Замбезі, і він є важливим туристичним об'єктом для сусідніх країн.",
-    obj: "Гідрологічні об'єкти Африки",
-    subj: "Водоспад Вікторія на річці Замбезі"
-  },
-  t5: {
-    title: "Найвідоміші природні об'єкти Африки зі Світової спадщини ЮНЕСКО",
-    problem: "Природні об'єкти Африки, включені до списку Світової спадщини ЮНЕСКО, є унікальними та потребують охорони. Вивчення їхнього статусу та загроз є актуальним для збереження глобальної спадщини.",
-    goal: "Систематизувати інформацію про найвідоміші природні об'єкти Африки зі списку ЮНЕСКО та визначити основні загрози для них.",
-    hypo: "Я припускаю, що найбільшою загрозою для об'єктів ЮНЕСКО в Африці є браконьєрство та незаконне видобування ресурсів, а не туризм.",
-    obj: "Світова спадщина ЮНЕСКО в Африці",
-    subj: "Природні об'єкти Африки зі списку ЮНЕСКО"
-  },
-  t6: {
-    title: "Порушення природної рівноваги в Африці та шляхи її відновлення",
-    problem: "Проблеми опустелювання, вирубування лісів та знищення тварин в Африці загрожують екологічній рівновазі материка. Дослідження цих процесів та пошук шляхів їх вирішення є надзвичайно важливим.",
-    goal: "Проаналізувати основні причини порушення природної рівноваги в Африці та запропонувати практичні шляхи її відновлення.",
-    hypo: "Я припускаю, що найефективнішим шляхом відновлення рівноваги є створення національних парків та впровадження сталого землеробства, а не лише міжнародні заборони.",
-    obj: "Екологічний стан Африки",
-    subj: "Причини та шляхи подолання порушень природної рівноваги"
-  },
-  t7: {
-    title: "Давид Лівінгстон — видатний дослідник Африки",
-    problem: "Давид Лівінгстон зробив значний внесок у дослідження внутрішніх районів Африки. Вивчення його експедицій є важливим для розуміння історії географічних відкриттів та їхнього впливу на розвиток науки.",
-    goal: "Дослідити життєвий шлях та наукові досягнення Давида Лівінгстона, визначити його внесок у географію Африки.",
-    hypo: "Я припускаю, що найбільшим досягненням Лівінгстона було не відкриття нових земель, а встановлення дружніх стосунків з місцевим населенням та боротьба з работоргівлею.",
-    obj: "Історія дослідження Африки",
-    subj: "Експедиції та наукова спадщина Давида Лівінгстона"
-  },
-  t8: {
-    title: "Вулкан Кіліманджаро — найвища точка Африки",
-    problem: "Кіліманджаро є найвищою вершиною Африки та унікальним природним об'єктом. Дослідження його кліматичних особливостей, зледеніння та впливу на довкілля є актуальним у контексті глобального потепління.",
-    goal: "Охарактеризувати геологічну будову, кліматичні умови та сучасний стан зледеніння вулкана Кіліманджаро.",
-    hypo: "Я припускаю, що через глобальне потепління площа льодовиків на вершині Кіліманджаро стрімко скорочується, і якщо тенденція збережеться, вони можуть повністю зникнути до кінця XXI століття.",
-    obj: "Вулканічні форми рельєфу Африки",
-    subj: "Вулкан Кіліманджаро як найвища точка материка"
-  }
+  t1: { title: "Африка: материк контрастів", problem: "Африка вражає різноманіттям ландшафтів. Розуміння контрастів важливе для збереження природи.", goal: "Дослідити географічні контрасти Африки.", hypo: "Я припускаю, що географічне положення зумовлює різноманіття природних зон.", obj: "Природа Африки", subj: "Природні контрасти" },
+  t2: { title: "Річки Ніл та Конго", problem: "Річки важливі для життя людей та екосистем.", goal: "Порівняти Ніл та Конго.", hypo: "Конго має більший гідроенергетичний потенціал.", obj: "Водні ресурси Африки", subj: "Річки Ніл та Конго" },
+  t3: { title: "Озера Африки", problem: "Озера — унікальні екосистеми, що потерпають від впливу людини.", goal: "Дослідити озера Вікторія, Танганьїка, Чад.", hypo: "Танганьїка має найбільше ендеміків.", obj: "Озерні екосистеми", subj: "Великі озера" },
+  t4: { title: "Водоспад Вікторія", problem: "Водоспад — об'єкт ЮНЕСКО, потребує збереження.", goal: "Охарактеризувати водоспад Вікторія.", hypo: "Він утворився внаслідок тектонічних рухів.", obj: "Гідрологічні об'єкти", subj: "Водоспад Вікторія" },
+  t5: { title: "Спадщина ЮНЕСКО в Африці", problem: "Природні об'єкти ЮНЕСКО потребують охорони.", goal: "Систематизувати об'єкти ЮНЕСКО.", hypo: "Найбільша загроза — браконьєрство.", obj: "Світова спадщина", subj: "Природні об'єкти Африки" },
+  t6: { title: "Порушення рівноваги", problem: "Опустелювання загрожує екології.", goal: "Проаналізувати причини та шляхи відновлення.", hypo: "Найефективніше — створення парків.", obj: "Екологічний стан", subj: "Порушення рівноваги" },
+  t7: { title: "Давид Лівінгстон", problem: "Внесок Лівінгстона у географію.", goal: "Дослідити експедиції Лівінгстона.", hypo: "Головне досягнення — боротьба з работоргівлею.", obj: "Історія дослідження", subj: "Експедиції Лівінгстона" },
+  t8: { title: "Вулкан Кіліманджаро", problem: "Глобальне потепління загрожує льодовикам.", goal: "Дослідити стан зледеніння.", hypo: "Льодовики можуть зникнути до кінця століття.", obj: "Вулканічні форми", subj: "Кіліманджaro" }
 };
 
-// --- ЗБЕРЕЖЕННЯ ТА СТАН ---
-const KEY = 'researcher_project_v3';
+// --- СТАН ---
+const KEY = 'researcher_project_v4';
 let photos = [];
-let links = []; // {url: string, qr: string}
+let coverPhoto = null;
+let chartInstance = null;
+let rating = 0;
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-}
-
-function startNotebook() {
-  save();
-  showScreen('main');
-  go(1);
-}
+// --- НАВІГАЦІЯ ---
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+id).classList.add('active'); }
+function startNotebook() { save(); showScreen('main'); go(1); }
 
 let cur = 1;
 function go(n) {
-  if (n < 1 || n > 8) return;
-  cur = n;
-  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === n - 1));
-  document.querySelectorAll('.step').forEach((s, i) => {
-    s.classList.toggle('active', i === n - 1);
-    s.classList.toggle('done', i < n - 1);
-  });
-  document.getElementById('backBtn').style.visibility = n === 1 ? 'hidden' : 'visible';
-  document.getElementById('nextBtn').style.display = n === 8 ? 'none' : 'inline-flex';
-  if (n === 8) buildReport();
+  if (n<1||n>8) return; cur = n;
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active', i===n-1));
+  document.querySelectorAll('.step').forEach((s,i)=>{ s.classList.toggle('active', i===n-1); s.classList.toggle('done', i<n-1); });
+  document.getElementById('backBtn').style.visibility = n===1?'hidden':'visible';
+  document.getElementById('nextBtn').style.display = n===8?'none':'inline-flex';
+  if (n===8) { buildReport(); generateSpeech(); }
   document.querySelector('main').scrollTop = 0;
 }
-function step(d) { go(cur + d); }
+function step(d) { go(cur+d); }
 
-// --- АВТОМАТИЧНЕ ЗАПОВНЕННЯ ---
+// --- АВТО-ЗАПОВНЕННЯ ---
 function applyTopicData(key) {
-  const data = TOPIC_DATA[key];
-  if (!data) return;
-
-  document.getElementById('topic').value = data.title;
-  document.getElementById('problem').value = data.problem;
-  document.getElementById('goal').value = data.goal;
-  document.getElementById('hypo').value = data.hypo;
-  document.getElementById('obj').value = data.obj;
-  document.getElementById('subj').value = data.subj;
-
+  const d = TOPIC_DATA[key]; if (!d) return;
+  document.getElementById('topic').value = d.title;
+  document.getElementById('problem').value = d.problem;
+  document.getElementById('goal').value = d.goal;
+  document.getElementById('hypo').value = d.hypo;
+  document.getElementById('obj').value = d.obj;
+  document.getElementById('subj').value = d.subj;
   document.getElementById('tasksList').innerHTML = '';
-  if (key === 't1') {
-    addTask("Знайти інформацію про кліматичні пояси Африки");
-    addTask("Дослідити, як рельєф впливає на природу материка");
-    addTask("Підготувати презентацію про контрасти Африки");
-  } else if (key === 't2') {
-    addTask("Знайти дані про довжину та площу басейнів Нілу та Конго");
-    addTask("Порівняти живлення та режим річок");
-    addTask("Створити порівняльну таблицю");
-  } else if (key === 't8') {
-    addTask("Дізнатися висоту Кіліманджаро та її зміну");
-    addTask("Знайти фото льодовиків Кіліманджаро 100 років тому і зараз");
-    addTask("Зробити висновок про вплив потепління");
-  } else {
-    addTask("Зібрати інформацію з різних джерел");
-    addTask("Проаналізувати знайдені факти");
-    addTask("Оформити результати дослідження");
-  }
-
-  save();
-  alert("Дані для обраної теми успішно підтягнуто! Перевірте кроки 3, 4 та 5.");
+  addTask("Зібрати інформацію"); addTask("Проаналізувати факти"); addTask("Оформити результати");
+  save(); alert("Дані підтягнуто!");
 }
 
-// --- ДИНАМІЧНІ СПИСКИ ---
-function addTask(text = '') {
-  const div = document.createElement('div');
-  div.className = 'item-row';
-  div.innerHTML = `
-    <input type="text" value="${text}" placeholder="Завдання..." oninput="save()">
-    <button class="del" onclick="this.parentElement.remove();save()">×</button>
-  `;
-  document.getElementById('tasksList').appendChild(div);
-}
-
-function addPlan(text = '') {
-  const div = document.createElement('div');
-  div.className = 'item-row';
-  div.innerHTML = `
-    <input type="text" value="${text}" placeholder="Крок плану..." oninput="save()">
-    <button class="del" onclick="this.parentElement.remove();save()">×</button>
-  `;
-  document.getElementById('planList').appendChild(div);
-}
-
-function addSource(text = '') {
-  const div = document.createElement('div');
-  div.className = 'item-row';
-  div.innerHTML = `
-    <input type="text" value="${text}" placeholder="Автор, назва, рік..." oninput="save()">
-    <button class="del" onclick="this.parentElement.remove();save()">×</button>
-  `;
-  document.getElementById('sourcesList').appendChild(div);
-}
+// --- СПИСКИ ---
+function addTask(t='') { const d=document.createElement('div'); d.className='item-row'; d.innerHTML=`<input type="text" value="${t}" placeholder="Завдання..." oninput="save()"><button class="del" onclick="this.parentElement.remove();save()">×</button>`; document.getElementById('tasksList').appendChild(d); }
+function addPlan(t='') { const d=document.createElement('div'); d.className='item-row'; d.innerHTML=`<input type="text" value="${t}" placeholder="Крок..." oninput="save()"><button class="del" onclick="this.parentElement.remove();save()">×</button>`; document.getElementById('planList').appendChild(d); }
+function addSource(t='') { const d=document.createElement('div'); d.className='item-row'; d.innerHTML=`<input type="text" value="${t}" placeholder="Джерело..." oninput="save()"><button class="del" onclick="this.parentElement.remove();save()">×</button>`; document.getElementById('sourcesList').appendChild(d); }
 
 // --- ФОТО ---
 function addPhotos(files) {
-  const valid = [...files].filter(f => f.type.startsWith('image/'));
-  valid.forEach(f => {
-    if (f.size > 8 * 1024 * 1024) { alert("Фото завелике (більше 8 МБ)."); return; }
+  [...files].filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    if(f.size>8*1024*1024){alert("Файл завеликий!");return;}
     const r = new FileReader();
-    r.onload = (ev) => { photos.push(ev.target.result); renderPhotos(); save(); };
+    r.onload = (e)=>{ photos.push(e.target.result); renderPhotos(); save(); };
     r.readAsDataURL(f);
   });
 }
-
 function renderPhotos() {
-  const wrap = document.getElementById('photoPreview');
-  wrap.innerHTML = '';
-  photos.forEach((src, i) => {
-    const thumb = document.createElement('div');
-    thumb.className = 'photo-thumb';
-    thumb.innerHTML = `<img src="${src}" alt="Photo ${i+1}">
-      <button class="photo-del" onclick="removePhoto(${i})">×</button>`;
-    wrap.appendChild(thumb);
+  const w = document.getElementById('photoPreview'); w.innerHTML='';
+  photos.forEach((src,i)=>{
+    const t = document.createElement('div'); t.className='photo-thumb';
+    t.innerHTML = `<img src="${src}"><button class="photo-del" onclick="removePhoto(${i})">×</button>`;
+    w.appendChild(t);
   });
 }
+function removePhoto(i) { photos.splice(i,1); renderPhotos(); save(); }
 
-function removePhoto(i) { photos.splice(i, 1); renderPhotos(); save(); }
+document.getElementById('photoCamera').addEventListener('change', e=>{ addPhotos(e.target.files); e.target.value=''; });
+document.getElementById('photoGallery').addEventListener('change', e=>{ addPhotos(e.target.files); e.target.value=''; });
 
-document.getElementById('photoCamera').addEventListener('change', (e) => {
-  addPhotos(e.target.files); e.target.value = '';
+document.getElementById('photoCover').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = (ev)=>{ coverPhoto = ev.target.result; renderCover(); save(); };
+  r.readAsDataURL(f);
 });
-document.getElementById('photoGallery').addEventListener('change', (e) => {
-  addPhotos(e.target.files); e.target.value = '';
-});
-
-// --- ПОСИЛАННЯ ТА QR ---
-function addLink() {
-  const div = document.createElement('div');
-  div.className = 'link-item';
-  div.innerHTML = `
-    <input type="url" placeholder="https://..." oninput="save()">
-    <button class="qr-btn" onclick="generateQR(this)">QR-код</button>
-    <button class="del" style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:8px;cursor:pointer" onclick="this.parentElement.remove();save()">×</button>
-  `;
-  document.getElementById('linksList').appendChild(div);
+function renderCover() {
+  const w = document.getElementById('coverPreview');
+  w.innerHTML = coverPhoto ? `<img src="${coverPhoto}" style="max-width:100%;border-radius:12px;max-height:200px;">` : '';
 }
 
+// --- ПОСИЛАННЯ ---
+function addLink() {
+  const d = document.createElement('div'); d.className='link-item';
+  d.innerHTML = `<input type="url" placeholder="https://..." oninput="save()"><button class="qr-btn" onclick="generateQR(this)">QR</button><button class="del" style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:8px;cursor:pointer" onclick="this.parentElement.remove();save()">×</button>`;
+  document.getElementById('linksList').appendChild(d);
+}
 function generateQR(btn) {
   const input = btn.parentElement.querySelector('input');
-  const url = input.value.trim();
-  if (!url) { alert("Спочатку введіть посилання!"); return; }
-  
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
-  
-  // Видаляємо старий QR, якщо є
-  const oldQr = btn.parentElement.querySelector('.qr-container');
-  if (oldQr) oldQr.remove();
+  const url = input.value.trim(); if(!url){alert("Введіть посилання!");return;}
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(url)}`;
+  const old = btn.parentElement.querySelector('.qr-container'); if(old) old.remove();
+  const qrDiv = document.createElement('div'); qrDiv.className='qr-container';
+  qrDiv.innerHTML = `<img src="${qrUrl}">`;
+  btn.parentElement.appendChild(qrDiv); save();
+}
 
-  const qrDiv = document.createElement('div');
-  qrDiv.className = 'qr-container';
-  qrDiv.innerHTML = `<img src="${qrUrl}" alt="QR Code">`;
-  btn.parentElement.appendChild(qrDiv);
-  
+// --- ДІАГРАМА ---
+function updateChart() {
+  const l1 = document.getElementById('chartLabel1').value || 'Показник 1';
+  const v1 = parseFloat(document.getElementById('chartVal1').value) || 0;
+  const l2 = document.getElementById('chartLabel2').value || 'Показник 2';
+  const v2 = parseFloat(document.getElementById('chartVal2').value) || 0;
+
+  if (chartInstance) chartInstance.destroy();
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [l1, l2],
+      datasets: [{
+        label: 'Порівняння',
+        data: [v1, v2],
+        backgroundColor: ['#7c3aed', '#ff8c38'],
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+  save();
+}
+
+// --- ПРОМОВА ---
+function generateSpeech() {
+  const v = id => document.getElementById(id).value || '...';
+  const speech = `Шановні вчителі та учні! Мене звати ${v('name')}. Я підготував(ла) проєкт на тему: «${v('topic')}».
+
+Актуальність мого дослідження полягає в тому, що ${v('problem')}.
+
+Мета мого проєкту: ${v('goal')}.
+
+Я висунув(ла) гіпотезу: ${v('hypo')}. У результаті дослідження я з'ясував(ла), що ${v('conclusion')}.
+
+Для презентації я створив(ла): ${v('product')}. Дякую за увагу!`;
+  document.getElementById('speech').value = speech;
+}
+
+// --- РЕЙТИНГ ---
+function setRating(n) {
+  rating = n;
+  document.querySelectorAll('#stars .star').forEach((s,i)=> s.classList.toggle('active', i<n));
   save();
 }
 
 // --- ЗБЕРЕЖЕННЯ ---
-function collectList(id) {
-  return [...document.querySelectorAll(`#${id} .item-row input`)].map(i => i.value).filter(v => v.trim());
-}
+function collectList(id) { return [...document.querySelectorAll(`#${id} .item-row input`)].map(i=>i.value).filter(v=>v.trim()); }
 
 function save() {
   const data = {
-    name: document.getElementById('name').value,
-    klass: document.getElementById('klass').value,
-    date: document.getElementById('date').value,
-    topic: document.getElementById('topic').value,
-    problem: document.getElementById('problem').value,
-    goal: document.getElementById('goal').value,
-    hypo: document.getElementById('hypo').value,
-    obj: document.getElementById('obj').value,
-    subj: document.getElementById('subj').value,
-    methods: document.getElementById('methods').value,
-    product: document.getElementById('product').value,
-    aiHelp: document.getElementById('aiHelp').value,
-    conclusion: document.getElementById('conclusion').value,
-    tasks: collectList('tasksList'),
-    plan: collectList('planList'),
-    sources: collectList('sourcesList'),
-    photos: photos,
-    links: [...document.querySelectorAll('#linksList .link-item')].map(item => ({
+    name: document.getElementById('name').value, klass: document.getElementById('klass').value, date: document.getElementById('date').value,
+    topic: document.getElementById('topic').value, problem: document.getElementById('problem').value, goal: document.getElementById('goal').value,
+    hypo: document.getElementById('hypo').value, obj: document.getElementById('obj').value, subj: document.getElementById('subj').value,
+    methods: document.getElementById('methods').value, product: document.getElementById('product').value, conclusion: document.getElementById('conclusion').value,
+    hardest: document.getElementById('hardest').value, rating: rating, speech: document.getElementById('speech').value,
+    tasks: collectList('tasksList'), plan: collectList('planList'), sources: collectList('sourcesList'),
+    photos: photos, cover: coverPhoto,
+    links: [...document.querySelectorAll('#linksList .link-item')].map(item=>({
       url: item.querySelector('input').value,
-      qr: item.querySelector('.qr-container') ? item.querySelector('.qr-container img').src : ''
-    }))
+      qr: item.querySelector('.qr-container img')?.src || ''
+    })),
+    chart: {
+      l1: document.getElementById('chartLabel1').value, v1: document.getElementById('chartVal1').value,
+      l2: document.getElementById('chartLabel2').value, v2: document.getElementById('chartVal2').value
+    }
   };
   localStorage.setItem(KEY, JSON.stringify(data));
-  if (cur === 8) buildReport();
 }
 
-// --- ЗАВАНТАЖЕННЯ ---
 function load() {
-  const d = JSON.parse(localStorage.getItem(KEY) || '{}');
-  if (d.name) document.getElementById('name').value = d.name;
-  if (d.klass) document.getElementById('klass').value = d.klass;
-  if (d.date) document.getElementById('date').value = d.date;
-  if (d.topic) document.getElementById('topic').value = d.topic;
-  if (d.problem) document.getElementById('problem').value = d.problem;
-  if (d.goal) document.getElementById('goal').value = d.goal;
-  if (d.hypo) document.getElementById('hypo').value = d.hypo;
-  if (d.obj) document.getElementById('obj').value = d.obj;
-  if (d.subj) document.getElementById('subj').value = d.subj;
-  if (d.methods) document.getElementById('methods').value = d.methods;
-  if (d.product) document.getElementById('product').value = d.product;
-  if (d.aiHelp) document.getElementById('aiHelp').value = d.aiHelp;
-  if (d.conclusion) document.getElementById('conclusion').value = d.conclusion;
-  
-  if (d.tasks) d.tasks.forEach(addTask);
-  if (d.plan) d.plan.forEach(addPlan);
-  if (d.sources) d.sources.forEach(addSource);
-  
-  if (d.photos && Array.isArray(d.photos)) { photos = d.photos; renderPhotos(); }
-  
-  if (d.links && Array.isArray(d.links)) {
-    d.links.forEach(l => {
-      const div = document.createElement('div');
-      div.className = 'link-item';
-      div.innerHTML = `
-        <input type="url" value="${l.url}" oninput="save()">
-        <button class="qr-btn" onclick="generateQR(this)">QR-код</button>
-        <button class="del" style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:8px;cursor:pointer" onclick="this.parentElement.remove();save()">×</button>
-      `;
-      if (l.qr) {
-        const qrDiv = document.createElement('div');
-        qrDiv.className = 'qr-container';
-        qrDiv.innerHTML = `<img src="${l.qr}" alt="QR Code">`;
-        div.appendChild(qrDiv);
-      }
-      document.getElementById('linksList').appendChild(div);
-    });
-  }
+  const d = JSON.parse(localStorage.getItem(KEY)||'{}');
+  ['name','klass','date','topic','problem','goal','hypo','obj','subj','methods','product','conclusion','hardest','speech'].forEach(k=>{ if(d[k]) document.getElementById(k).value=d[k]; });
+  if(d.tasks) d.tasks.forEach(addTask);
+  if(d.plan) d.plan.forEach(addPlan);
+  if(d.sources) d.sources.forEach(addSource);
+  if(d.photos){ photos=d.photos; renderPhotos(); }
+  if(d.cover){ coverPhoto=d.cover; renderCover(); }
+  if(d.rating){ rating=d.rating; setRating(rating); }
+  if(d.links){ d.links.forEach(l=>{ addLink(); const last = document.querySelector('#linksList .link-item:last-child input'); if(last) last.value=l.url; }); }
+  if(d.chart){ document.getElementById('chartLabel1').value=d.chart.l1||''; document.getElementById('chartVal1').value=d.chart.v1||''; document.getElementById('chartLabel2').value=d.chart.l2||''; document.getElementById('chartVal2').value=d.chart.v2||''; updateChart(); }
 }
 
 // --- ЗВІТ ---
 function buildReport() {
   const v = id => document.getElementById(id).value;
-  document.getElementById('r-name').textContent = `${v('name') || 'Дослідник'} (${v('klass') || 'Клас не вказано'})`;
-  document.getElementById('r-meta').textContent = v('date') || 'Дата не вказана';
-  document.getElementById('r-topic').textContent = v('topic') || '—';
-  document.getElementById('r-problem').textContent = v('problem') || '—';
-  document.getElementById('r-goal').textContent = v('goal') || '—';
-  document.getElementById('r-hypo').textContent = v('hypo') || '—';
-  document.getElementById('r-objsubj').textContent = `Об'єкт: ${v('obj') || '—'}. Предмет: ${v('subj') || '—'}.`;
-  document.getElementById('r-methods').textContent = v('methods') || '—';
-  document.getElementById('r-product').textContent = v('product') || '—';
-  document.getElementById('r-conclusion').textContent = v('conclusion') || '—';
+  document.getElementById('r-name').textContent = `${v('name')||'Дослідник'} (${v('klass')||''})`;
+  document.getElementById('r-meta').textContent = v('date')||'';
+  document.getElementById('r-topic').textContent = v('topic')||'—';
+  document.getElementById('r-problem').textContent = v('problem')||'—';
+  document.getElementById('r-goal').textContent = v('goal')||'—';
+  document.getElementById('r-hypo').textContent = v('hypo')||'—';
+  document.getElementById('r-objsubj').textContent = `Об'єкт: ${v('obj')||'—'}. Предмет: ${v('subj')||'—'}`;
+  document.getElementById('r-product').textContent = v('product')||'—';
+  document.getElementById('r-conclusion').textContent = v('conclusion')||'—';
+  document.getElementById('r-reflection').textContent = `Оцінка: ${rating}/5. Найважче: ${v('hardest')||'—'}`;
 
-  const ulTasks = document.getElementById('r-tasks');
-  ulTasks.innerHTML = collectList('tasksList').map(t => `<li>${t}</li>`).join('');
-  
-  const ulPlan = document.getElementById('r-plan');
-  ulPlan.innerHTML = collectList('planList').map(t => `<li>${t}</li>`).join('');
-  
-  const ulSources = document.getElementById('r-sources');
-  ulSources.innerHTML = collectList('sourcesList').map(t => `<li>${t}</li>`).join('');
+  const coverDiv = document.getElementById('coverDisplay');
+  coverDiv.innerHTML = coverPhoto ? `<img src="${coverPhoto}" style="max-width:100%;border-radius:12px;max-height:250px;">` : '';
 
-  // AI Help
-  const aiText = v('aiHelp').trim();
-  const aiRow = document.getElementById('r-ai-row');
-  if (aiText) { document.getElementById('r-ai').textContent = aiText; aiRow.style.display = ''; }
-  else aiRow.style.display = 'none';
-
-  // Photos in Report
-  const photoRow = document.getElementById('r-photo-row');
-  const photoGrid = document.getElementById('r-photos');
-  photoGrid.innerHTML = '';
-  if (photos.length) {
-    photoRow.style.display = '';
-    photos.forEach(src => {
-      const item = document.createElement('div');
-      item.className = 'r-photo-item';
-      item.innerHTML = `<img src="${src}" alt="Photo">`;
-      photoGrid.appendChild(item);
-    });
-  } else photoRow.style.display = 'none';
-
-  // Links in Report
-  const linkRow = document.getElementById('r-links-row');
-  const linkContainer = document.getElementById('r-links');
-  linkContainer.innerHTML = '';
-  const linkItems = [...document.querySelectorAll('#linksList .link-item')].filter(i => i.querySelector('input').value.trim());
-  if (linkItems.length) {
-    linkRow.style.display = '';
-    linkItems.forEach(item => {
-      const url = item.querySelector('input').value;
-      const qr = item.querySelector('.qr-container img')?.src || '';
-      const div = document.createElement('div');
-      div.style.marginBottom = '10px';
-      div.innerHTML = `<p><b>URL:</b> <a href="${url}" target="_blank">${url}</a></p>`;
-      if (qr) {
-        const img = document.createElement('img');
-        img.src = qr;
-        img.style.maxWidth = '80px';
-        img.style.marginTop = '5px';
-        div.appendChild(img);
-      }
-      linkContainer.appendChild(div);
-    });
-  } else linkRow.style.display = 'none';
+  const pRow = document.getElementById('r-photo-row'); const pGrid = document.getElementById('r-photos'); pGrid.innerHTML='';
+  if(photos.length){ pRow.style.display=''; photos.forEach(src=>{ const i=document.createElement('div'); i.className='r-photo-item'; i.innerHTML=`<img src="${src}">`; pGrid.appendChild(i); }); }
+  else pRow.style.display='none';
 }
 
-function resetAll() {
-  if (confirm('Почати спочатку? Усі дані буде видалено.')) {
-    localStorage.removeItem(KEY);
-    location.reload();
-  }
+// --- ПРЕЗЕНТАЦІЯ ---
+let currentSlide = 1;
+function startPresentation() {
+  document.getElementById('presentation').classList.add('active');
+  currentSlide = 1;
+  const v = id => document.getElementById(id).value;
+  document.getElementById('pres-title').textContent = v('topic') || 'Мій проєкт';
+  document.getElementById('pres-author').textContent = `Автор: ${v('name')||''} (${v('klass')||''})`;
+  document.getElementById('pres-cover').innerHTML = coverPhoto ? `<img src="${coverPhoto}" style="max-height:40vh;border-radius:15px;margin-top:20px;">` : '';
+  document.getElementById('pres-problem').textContent = `Проблема: ${v('problem')||'—'}`;
+  document.getElementById('pres-goal').textContent = `Мета: ${v('goal')||'—'}`;
+  document.getElementById('pres-hypo').textContent = v('hypo')||'—';
+  const presPhotos = document.getElementById('pres-photos'); presPhotos.innerHTML='';
+  photos.slice(0,4).forEach(src=>{ const img=document.createElement('img'); img.src=src; img.style.maxHeight='30vh'; img.style.borderRadius='10px'; presPhotos.appendChild(img); });
+  document.getElementById('pres-conclusion').textContent = v('conclusion')||'—';
+  updateSlideView();
 }
+function closePresentation() { document.getElementById('presentation').classList.remove('active'); }
+function changeSlide(d) { currentSlide += d; if(currentSlide<1) currentSlide=1; if(currentSlide>5) currentSlide=5; updateSlideView(); }
+function updateSlideView() {
+  document.querySelectorAll('.slide').forEach((s,i)=> s.classList.toggle('active', i===currentSlide-1));
+}
+
+// --- СКИДАННЯ ---
+function resetAll() { if(confirm('Видалити всі дані?')){ localStorage.removeItem(KEY); location.reload(); } }
 
 // --- ІНІЦІАЛІЗАЦІЯ ---
 window.addEventListener('load', () => {
-  const d = new Date();
-  document.getElementById('date').value = d.toISOString().split('T')[0];
-  
-  if (localStorage.getItem(KEY)) {
-    load();
-    showScreen('main');
-  } else {
-    addTask(); addTask();
-    addPlan(); addPlan();
-    addSource();
-  }
-  
+  const d = new Date(); document.getElementById('date').value = d.toISOString().split('T')[0];
+  if(localStorage.getItem(KEY)) { load(); showScreen('main'); }
+  else { addTask(); addTask(); addPlan(); addPlan(); addSource(); }
   window.addEventListener('beforeunload', save);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+  document.addEventListener('visibilitychange', () => { if(document.hidden) save(); });
 });
 </script>
 </body>
